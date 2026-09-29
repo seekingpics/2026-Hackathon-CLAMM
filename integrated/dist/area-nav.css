@@ -9,16 +9,16 @@
 .top-nav-item:hover{background:#eef2f4;color:var(--ink)}
 .top-nav-item.active{background:var(--navy);color:#fff}
 
-.area-badge{display:flex;align-items:center;gap:14px;min-width:0}
-.area-dot{flex-shrink:0;width:52px;height:52px;border-radius:50%;background:var(--c);color:#121417;display:grid;place-items:center;box-shadow:0 6px 18px #1214171f}
-.area-dot .ui-icon{width:24px;height:24px}
-.area-badge-text{min-width:0}
-.area-badge-text small{display:block;font-size:10px;font-weight:650;letter-spacing:1.6px;color:var(--muted)}
-.area-badge-text strong{display:block;font-size:18px;font-weight:700;color:var(--ink);white-space:nowrap}
-.area-switch{display:flex;gap:8px;margin-left:8px;padding-left:16px;border-left:1px solid var(--line)}
-.area-mini{width:38px;height:38px;padding:0;border-radius:50%;background:var(--c);color:#121417;display:grid;place-items:center;transition:transform .2s,box-shadow .2s}
+.area-badge{display:flex;align-items:center;gap:clamp(8px,1vw,14px);min-width:0}
+.area-dot{flex-shrink:0;width:clamp(38px,3.2vw,52px);height:clamp(38px,3.2vw,52px);border-radius:50%;background:var(--c);color:#121417;display:grid;place-items:center;box-shadow:0 6px 18px #1214171f}
+.area-dot .ui-icon{width:46%;height:46%}
+.area-badge-text{min-width:0;overflow:hidden}
+.area-badge-text small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:650;letter-spacing:1.6px;color:var(--muted)}
+.area-badge-text strong{display:block;font-size:clamp(14px,1.2vw,18px);font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.area-switch{display:flex;flex-shrink:0;gap:clamp(4px,.5vw,8px);margin-left:clamp(2px,.5vw,8px);padding-left:clamp(8px,1vw,16px);border-left:1px solid var(--line)}
+.area-mini{width:clamp(28px,2.4vw,38px);height:clamp(28px,2.4vw,38px);padding:0;border-radius:50%;background:var(--c);color:#121417;display:grid;place-items:center;transition:transform .2s,box-shadow .2s}
 .area-mini:hover{transform:scale(1.12);box-shadow:0 8px 18px #12141726}
-.area-mini .ui-icon{width:18px;height:18px}
+.area-mini .ui-icon{width:48%;height:48%}
 
 .area-wheel{position:relative;width:min(440px,100%);aspect-ratio:1;margin:0 auto 14px}
 .area-ring{position:absolute;inset:17%;border:2px dashed #3b5263;border-radius:50%}
@@ -48,6 +48,6 @@
 
 @media(max-width:1150px){.topbar{padding:0 24px}.top-nav-item{padding:9px 12px}.top-site label{display:none}}
 @media(max-width:900px){.topbar{height:auto;flex-wrap:wrap;padding:12px 20px;row-gap:10px}.top-nav{order:3;width:100%;margin-left:0;overflow-x:auto}.top-site{margin-left:auto}.area-circle strong{font-size:13px}}
-@media(max-width:760px){.topbar{height:auto;padding:12px 16px}.top-brand img{height:38px}.area-badge-text strong{font-size:15px}.area-switch{padding-left:10px;margin-left:2px;gap:6px}.area-mini{width:34px;height:34px}.area-circle .ui-icon{width:22px;height:22px}.area-circle strong{font-size:12px;max-width:92px}.area-circle span{font-size:10px}.area-hub strong{font-size:13px}.area-hub small{display:none}}
+@media(max-width:760px){.topbar{height:auto;padding:12px 16px}.top-brand img{height:38px}.area-badge-text strong{font-size:15px}.area-circle .ui-icon{width:22px;height:22px}.area-circle strong{font-size:12px;max-width:92px}.area-circle span{font-size:10px}.area-hub strong{font-size:13px}.area-hub small{display:none}}
 @media(prefers-reduced-motion:reduce){.content.enter>*,.topbar.enter *{animation:none!important}.area-circle,.area-mini{transition:none}.area-circle:hover,.area-mini:hover{transform:none}}
 @media print{.top-nav{display:none}}
