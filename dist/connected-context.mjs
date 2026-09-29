@@ -8,6 +8,7 @@ export const SUPPORT_TOOLS={queue:{title:'Queue warnings',tab:'live'},planning:{
 const values=items=>`<div class="support-values">${items.map(([v,l])=>`<div><strong>${esc(v)}</strong><span>${esc(l)}</span></div>`).join('')}</div>`;
 export function supportingCard(tab,site,s,st){
   const tool=Object.keys(SUPPORT_TOOLS).find(k=>SUPPORT_TOOLS[k].tab===tab);if(!tool)return '';
+  if(tool==='fleet')return '';
   const config=SUPPORT_TOOLS[tool],modelled=site.id==='CR';let detail='',foot='';
   if(!modelled){detail=`<p>No ${config.title.toLowerCase()} model has been configured for ${esc(site.name)}.</p>`;foot='The Cremorne example is available inside the supporting tool. Its results do not describe this worksite.';}
   else if(tool==='queue'){
@@ -16,10 +17,6 @@ export function supportingCard(tab,site,s,st){
   }else if(tool==='planning'){
     detail=values([[`Plan ${s.plan}`,PLANS[s.plan].name],[s.traffic.pedestrian.reachable?`+${num(s.traffic.pedestrian.extraMeters)} m`:'No route','Pedestrian diversion'],[s.traffic.bus.reachable?`+${num(s.traffic.bus.extraSeconds/60,1)} min`:'No route','Modelled bus delay']])+`<p>${s.fleet.equipment.items.map(e=>`${e.quantity} ${e.type.toLowerCase()}`).join(' · ')}</p>`;
     foot='Cremorne illustrative planning assumptions. Comparing plans changes queue and equipment models; the controller position and safety configuration remain subject to their own checks.';
-  }else{
-    const ev=s.fleet.vehicles.find(v=>v.id==='EV-01');
-    detail=values([[s.fleet.feasible?'Model feasible':'Review required','Delivery plan'],[`${num(ev.finalKwh,1)} / ${num(st.assumptions.reserveSoc*st.assumptions.battery)} kWh`,'EV finish / required reserve']])+`<p>${esc(s.fleet.issues[0]||'All modelled job, payload and reserve constraints pass.')}</p>`;
-    foot='Cremorne illustrative dispatch · 08:00–13:00. A feasible delivery plan does not confirm equipment has arrived or that a site is ready.';
   }
   return `<section class="support-link" aria-label="${config.title} supporting context"><div><span class="eyebrow">SUPPORTING TOOL · ${modelled?'CREMORNE EXAMPLE':'NOT YET MODELLED'}</span><h3>${config.title}</h3>${detail}<small>${foot}</small></div>${btn(`Open ${config.title.toLowerCase()}`,`tool-${tool}`)}</section>`;
 }
