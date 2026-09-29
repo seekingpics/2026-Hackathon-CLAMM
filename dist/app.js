@@ -1,4 +1,4 @@
-import {homePage,icon} from './home.mjs';
+import {homePage,icon,areaBadge,flyCircle} from './home.mjs';
 import {supportingCard,supportingSnapshot,evidencePage,FUNCTION_NAMES,functionName,SUPPORT_TOOLS} from './connected-context.mjs';
 import {initialiseGovernmentData,refreshRoads,setGovernmentControl,governmentExport} from './government-data.mjs';
 import {selectedSite,activeEvents,validity,stamp,STAGES} from './safety-model.mjs';
@@ -11,7 +11,7 @@ const app=document.querySelector('#app');
 const NAV=[['home','Home','home'],['safety','Worker safety','shield'],['report','Evidence & report','report']];
 const TABS={live:'On-site protection',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
 const state={view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,planningTab:'plans',toolExample:false,returnTo:{site:'CR',tab:'live'}};
-let exportPreview=null,versionCounter=1,cachedKey='',cachedSnapshot;
+let exportPreview=null,versionCounter=1,cachedKey='',cachedSnapshot,enterNext=false;
 const isTool=()=>Boolean(SUPPORT_TOOLS[state.view]);
 const modelAvailable=()=>workerSafety.selected==='CR'||state.toolExample;
 const clock=()=>formatTime(480+state.time/60);
@@ -41,8 +41,8 @@ function readRoute(){
  else if(view==='planning')state.planningTab=sub==='notices'?'notices':'plans';
  state.playing=false;
 }
-function navigate(view){state.view=view;state.playing=false;state.toolExample=false;updateRoute();window.scrollTo({top:0,behavior:'instant'});}
-function openArea(tab){if(!TABS[tab])return;handleSafetyAction('tab',tab);navigate('safety');}
+function navigate(view){if(view!==state.view)enterNext=true;state.view=view;state.playing=false;state.toolExample=false;updateRoute();window.scrollTo({top:0,behavior:'instant'});}
+function openArea(tab){if(!TABS[tab])return;if(tab!==workerSafety.tab||state.view!=='safety')enterNext=true;handleSafetyAction('tab',tab);navigate('safety');}
 function openTool(tool){
  if(!SUPPORT_TOOLS[tool])return;
  if(!isTool())state.returnTo={site:workerSafety.selected,tab:state.view==='safety'?workerSafety.tab:SUPPORT_TOOLS[tool].tab};
@@ -81,7 +81,8 @@ function toolContent(s){
 function render(){
  const s=current(),site=selectedSite(workerSafety),title=isTool()?SUPPORT_TOOLS[state.view].title:NAV.find(x=>x[0]===state.view)?.[1]||'Home';
  document.title=`${title} · RPM Roadworks Lab`;
- app.innerHTML=`<a class="skip-link" href="#main-content">Skip to content</a><div class="shell"><aside class="sidebar"><div class="brand"><img class="brand-logo" src="./assets/rpm-hire-logo.png" alt="RPM Hire — Keeping Traffic Moving" width="544" height="190"><small>ROADWORKS LAB</small></div><div class="side-label">WORKSPACE</div><nav aria-label="Main navigation">${NAV.map(([id,label,ico])=>{const active=state.view===id||(id==='safety'&&isTool());return `<button data-action="nav-${id}" class="nav-item ${active?'active':''}" ${active?'aria-current="page"':''}>${icon(ico)}${label}</button>`;}).join('')}</nav><div class="sidebar-foot"><strong>Worker safety demonstrator</strong>Melbourne, Victoria<br>Official road context<br>Simulated operations</div></aside><div class="page"><header class="topbar"><div class="breadcrumb">Workspace / <strong>${state.view==='home'?'Home':title}</strong></div><div class="top-site"><label for="worksite">Selected worksite</label><select id="worksite" aria-label="Selected worksite">${workerSafety.sites.map(s=>`<option value="${s.id}" ${s.id===site.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="top-meta"><span class="badge">DEMONSTRATION</span></div></header><main class="content ${state.view==='home'?'is-home':''}" id="main-content" tabindex="-1">${state.view==='home'?'':`<div class="heading-row"><div><h1>${title}</h1><p class="sub">${state.view==='safety'?'Protect people. Support the worksite.':isTool()?'Connected context for the worker safety workspace.':'Worker records and supporting model evidence.'}</p></div><div class="actions">${btn(state.guide===null?'Start guided demo':'Resume guided demo','tour','dark')}${state.view==='report'?'':btn('Export scenario','export')}</div></div>`}${guideMarkup()}<div id="view">${state.view==='home'?homePage(site):state.view==='safety'?safetyPage():state.view==='report'?evidencePage(s,state,exportSafety(),governmentExport()):toolContent(s)}</div><p class="footnote">RPM Roadworks Lab · Official SCATS / Vicmap road context · Simulated operations · No physical equipment is controlled.</p></main></div></div><div id="dialog-root">${dialogMarkup()}</div>`;
+ app.innerHTML=`<a class="skip-link" href="#main-content">Skip to content</a><div class="shell"><div class="page"><header class="topbar ${enterNext?'enter':''}"><div class="top-left">${state.view==='safety'?areaBadge(workerSafety.tab):`<button type="button" class="top-brand" data-action="nav-home" aria-label="RPM Roadworks Lab home"><img src="./assets/rpm-hire-logo.png" alt="RPM Hire — Keeping Traffic Moving" width="544" height="190"></button>`}</div><nav class="top-nav" aria-label="Main navigation">${NAV.map(([id,label])=>{const active=state.view===id||(id==='safety'&&isTool());return `<button data-action="nav-${id}" class="top-nav-item ${active?'active':''}" ${active?'aria-current="page"':''}>${label}</button>`;}).join('')}</nav><div class="top-site"><label for="worksite">Selected worksite</label><select id="worksite" aria-label="Selected worksite">${workerSafety.sites.map(s=>`<option value="${s.id}" ${s.id===site.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="top-meta"><span class="badge">DEMONSTRATION</span></div></header><main class="content ${state.view==='home'?'is-home':''} ${enterNext?'enter':''}" id="main-content" tabindex="-1">${state.view==='home'?'':`<div class="heading-row"><div><h1>${title}</h1><p class="sub">${state.view==='safety'?'Protect people. Support the worksite.':isTool()?'Connected context for the worker safety workspace.':'Worker records and supporting model evidence.'}</p></div><div class="actions">${btn(state.guide===null?'Start guided demo':'Resume guided demo','tour','dark')}${['report','safety'].includes(state.view)?'':btn('Export scenario','export')}</div></div>`}${guideMarkup()}<div id="view">${state.view==='home'?homePage(site):state.view==='safety'?safetyPage():state.view==='report'?evidencePage(s,state,exportSafety(),governmentExport()):toolContent(s)}</div></main></div></div><div id="dialog-root">${dialogMarkup()}</div>`;
+ enterNext=false;
 }
 function repaintWorkspace(){if(state.view==='safety')paintSafety();else render();}
 function dynamic(){
@@ -110,8 +111,11 @@ app.addEventListener('click',event=>{
  if(target.closest('.skip-link')){event.preventDefault();document.querySelector('#main-content')?.focus();return;}
  const refresh=target.closest('[data-government-refresh]');if(refresh){refreshRoads(refresh.dataset.governmentRefresh);return;}
  const bar=target.closest('[data-government-bar]');if(bar){setGovernmentControl('interval',bar.dataset.governmentBar,bar.dataset.governmentSite);repaintWorkspace();return;}
- const ws=target.closest('[data-ws]');if(ws){if(ws.disabled)return;handleSafetyAction(ws.dataset.ws,ws.dataset.value);if(['tab','site','multi'].includes(ws.dataset.ws)){updateRoute(true);render();}else repaintWorkspace();return;}
+ const ws=target.closest('[data-ws]');if(ws){if(ws.disabled)return;if(ws.dataset.ws==='tab'&&ws.dataset.value!==workerSafety.tab)enterNext=true;handleSafetyAction(ws.dataset.ws,ws.dataset.value);if(['tab','site','multi'].includes(ws.dataset.ws)){updateRoute(true);render();}else repaintWorkspace();return;}
  const button=target.closest('[data-action]');if(!button||button.disabled)return;event.preventDefault();const action=button.dataset.action;
+ let fly=null;
+ if(action.startsWith('area-')&&button.dataset.area)fly={rect:button.getBoundingClientRect(),tab:button.dataset.area,to:'[data-area-badge]'};
+ else if(action==='nav-home'&&state.view==='safety'){const badge=document.querySelector('[data-area-badge]');if(badge)fly={rect:badge.getBoundingClientRect(),tab:workerSafety.tab,to:`.area-circle[data-area="${workerSafety.tab}"]`};}
  try{
   if(action.startsWith('nav-')){const view=action.slice(4);if(isTool()&&view==='safety')returnToSafety();else if(SUPPORT_TOOLS[view])openTool(view);else navigate(view);}
   else if(action.startsWith('area-'))openArea(action.slice(5));
@@ -148,6 +152,7 @@ app.addEventListener('click',event=>{
    case 'print':window.print();return;
   }
   render();focusDialog();
+  if(fly)flyCircle(fly.rect,document.querySelector(fly.to),fly.tab);
  }catch(error){toast(error.message);}
 });
 app.addEventListener('change',event=>{

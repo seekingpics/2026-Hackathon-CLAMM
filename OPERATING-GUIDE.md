@@ -18,15 +18,13 @@ The three shortcuts use your selected site and worker. Previous events remain un
 
 ## 01 · On-site protection
 
-Select Normal vehicle passing, Vehicle approaching workers, Simulated speeding, Vehicle entering restricted zone, or Pedestrian entering restricted zone. Selecting a scenario resets the replay to zero and starts movement. Normal passage does not generate a hazard. Other scenarios notify the watch when the moving object reaches the relevant trigger area.
+This is an interactive concept simulation. Choose a situation to simulate: Normal traffic, Speeding vehicle approaching workers, Vehicle entering restricted work zone, or Pedestrian entering restricted zone. The simulation starts immediately.
 
-Use Pause, Play, Replay or the timeline to inspect the scene. The Apple Watch-style device automatically displays a delivered alert. Press Acknowledge alert on the watch to record receipt. Acknowledgement does not clear the hazard or close its event. SOS and Request break are also operated on the watch.
+When the moving vehicle or pedestrian reaches the detection zone, the scene pauses and shows Hazard detected with the simulated speed, the distance to the worker and the risk level. The worker’s watch is alerted automatically and vibrates until the worker presses Acknowledge. Acknowledgement records receipt; it does not clear the hazard.
 
-Local events show the event ID, original configuration, notification result, owner and response stage. Assign supervisor, then Start response. After the observation is restored and the condition is cleared, Review & close is available. Mark hazard condition cleared returns the scenario to normal but keeps the event pending review.
+Choose a response: Activate warning sign (Sound site alarm for a pedestrian) or Dispatch supervisor. The page shows the signal travelling Sensor → Safety platform → sign, alarm or supervisor, then the risk level falls to low and a short result appears. These responses are presentation steps in the simulation; they do not control physical equipment. Reset simulation or Try another scenario returns to the start. Normal traffic passes without a hazard.
 
-Open Connectivity checks & local alert path to simulate equipment failure, obstruction or a disconnected wearable. These differ from Simulate internet outage: loss of the internet retains local processing in the demo but freezes the supervisor’s cloud copy. Restore internet synchronises the same event IDs. There is no durable offline storage or physical device connection.
-
-Queue warnings appears as supporting context below the safety workspace. It uses a separate model clock and sends no watch notifications. Open queue warnings to inspect its model.
+The timeline on the right lists only the current simulation. The full event cards with owner actions, Connectivity checks & local alert path and Load local video are under View event details. Internet outage simulation is on Multi-site supervision. Queue warnings is no longer shown on this page; the tool remains available at /#queue.
 
 ## 02 · Workers & support
 
