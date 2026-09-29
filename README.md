@@ -50,3 +50,14 @@ Run each directly (also works in environments that restrict test-runner subproce
 Legacy module identifiers remain inside model data for compatibility. The interface and CSV use functional names. Optional WebMCP tools read the complete scenario or configure the Cremorne supporting model; ordinary browsers can use all screens without WebMCP.
 
 The supplied RPM Hire logo is retained unchanged.
+
+## Integrated hackathon merge (2026-09-30)
+
+This build combines the strongest non-overlapping changes from the team snapshots:
+
+- Matt: current Worker safety UI, Road User Notification, live demo, layout console and navigation map.
+- Charles: data-first Evidence & report page with filters, event detail and provenance.
+- Ash: Work-zone planning Plan & simulate workflow, equipment selection, mock impact simulation and deployment selection.
+- Existing Public works notices are retained as a second Work-zone planning tab.
+
+The integration intentionally keeps the newest Worker safety implementation instead of overwriting it with older snapshot versions of shared files. Run `npm test` to validate the merged behaviour.

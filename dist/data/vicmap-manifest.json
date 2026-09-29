@@ -1,0 +1,77 @@
+[
+  {
+    "radiusMetres": 400,
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "centre": [
+      144.997928,
+      -37.825686
+    ],
+    "siteId": "cremorne",
+    "licence": "CC BY 4.0",
+    "geometryTypes": [
+      "LineString"
+    ],
+    "sourceDownloadUrl": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/ArcGIS/rest/services/Vicmap_Transport/FeatureServer/1/query?f=geojson&where=1%3D1&geometry=144.997928,-37.825686&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&distance=400&units=esriSRUnit_Meter&outFields=OBJECTID,ufi,pfi,ezi_road_name,road_name,road_type,class_code,direction_code,left_locality,right_locality&outSR=4326&returnGeometry=true&resultRecordCount=1000",
+    "featureCount": 202,
+    "sourceDatasetUrl": "https://discover.data.vic.gov.au/dataset/vicmap-transport-road-line",
+    "fetchedAt": "2026-09-29T06:00:59.7123888Z",
+    "accessControlAllowOrigin": [
+      "*"
+    ],
+    "attribution": "Vicmap Transport – State of Victoria (Department of Transport and Planning), CC BY 4.0",
+    "serviceDataUpdatedAt": "2026-09-19T18:54:59.9620000Z",
+    "serviceItemUrl": "https://www.arcgis.com/home/item.html?id=9642c88db1284027b41a91b0abd72dfe",
+    "coordinateSource": "Victorian Traffic Signals official CSV; SCATS sites 4808, 4801, 4881 respectively",
+    "geometryNote": "Feature selection intersects a 400 m buffer. Whole source road line features are returned and may extend beyond the buffer; these are road centrelines, not measured kerbs or work-zone boundaries."
+  },
+  {
+    "radiusMetres": 400,
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "centre": [
+      144.99917,
+      -37.818584
+    ],
+    "siteId": "richmond",
+    "licence": "CC BY 4.0",
+    "geometryTypes": [
+      "LineString"
+    ],
+    "sourceDownloadUrl": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/ArcGIS/rest/services/Vicmap_Transport/FeatureServer/1/query?f=geojson&where=1%3D1&geometry=144.99917,-37.818584&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&distance=400&units=esriSRUnit_Meter&outFields=OBJECTID,ufi,pfi,ezi_road_name,road_name,road_type,class_code,direction_code,left_locality,right_locality&outSR=4326&returnGeometry=true&resultRecordCount=1000",
+    "featureCount": 152,
+    "sourceDatasetUrl": "https://discover.data.vic.gov.au/dataset/vicmap-transport-road-line",
+    "fetchedAt": "2026-09-29T06:01:01.7151453Z",
+    "accessControlAllowOrigin": [
+      "*"
+    ],
+    "attribution": "Vicmap Transport – State of Victoria (Department of Transport and Planning), CC BY 4.0",
+    "serviceDataUpdatedAt": "2026-09-19T18:54:59.9620000Z",
+    "serviceItemUrl": "https://www.arcgis.com/home/item.html?id=9642c88db1284027b41a91b0abd72dfe",
+    "coordinateSource": "Victorian Traffic Signals official CSV; SCATS sites 4808, 4801, 4881 respectively",
+    "geometryNote": "Feature selection intersects a 400 m buffer. Whole source road line features are returned and may extend beyond the buffer; these are road centrelines, not measured kerbs or work-zone boundaries."
+  },
+  {
+    "radiusMetres": 400,
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "centre": [
+      144.962634,
+      -37.823785
+    ],
+    "siteId": "southbank",
+    "licence": "CC BY 4.0",
+    "geometryTypes": [
+      "LineString"
+    ],
+    "sourceDownloadUrl": "https://services-ap1.arcgis.com/P744lA0wf4LlBZ84/ArcGIS/rest/services/Vicmap_Transport/FeatureServer/1/query?f=geojson&where=1%3D1&geometry=144.962634,-37.823785&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&distance=400&units=esriSRUnit_Meter&outFields=OBJECTID,ufi,pfi,ezi_road_name,road_name,road_type,class_code,direction_code,left_locality,right_locality&outSR=4326&returnGeometry=true&resultRecordCount=1000",
+    "featureCount": 205,
+    "sourceDatasetUrl": "https://discover.data.vic.gov.au/dataset/vicmap-transport-road-line",
+    "fetchedAt": "2026-09-29T06:01:02.7109634Z",
+    "accessControlAllowOrigin": [
+      "*"
+    ],
+    "attribution": "Vicmap Transport – State of Victoria (Department of Transport and Planning), CC BY 4.0",
+    "serviceDataUpdatedAt": "2026-09-19T18:54:59.9620000Z",
+    "serviceItemUrl": "https://www.arcgis.com/home/item.html?id=9642c88db1284027b41a91b0abd72dfe",
+    "coordinateSource": "Victorian Traffic Signals official CSV; SCATS sites 4808, 4801, 4881 respectively",
+    "geometryNote": "Feature selection intersects a 400 m buffer. Whole source road line features are returned and may extend beyond the buffer; these are road centrelines, not measured kerbs or work-zone boundaries."
+  }
+]
