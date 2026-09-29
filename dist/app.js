@@ -9,7 +9,7 @@ import {VIEWS,workerSummary,balance} from './views.mjs';
 
 const app=document.querySelector('#app');
 const NAV=[['home','Home','home'],['safety','Worker safety','shield'],['report','Evidence & report','report']];
-const TABS={live:'On-site protection',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
+const TABS={live:'On-site protection',nav:'Navigation map',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
 const state={view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,planningTab:'plans',toolExample:false,returnTo:{site:'CR',tab:'live'}};
 let exportPreview=null,versionCounter=1,cachedKey='',cachedSnapshot,enterNext=false;
 const isTool=()=>Boolean(SUPPORT_TOOLS[state.view]);
