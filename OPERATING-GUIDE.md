@@ -4,7 +4,7 @@ English client demonstration · Melbourne, Victoria · 29 September 2026
 
 ## Start here
 
-Open Home and select a worksite. The main navigation contains Home, Worker safety, and Evidence & report. The four segments of the circle open the corresponding worker safety area. The selected worksite and its session records are retained while you move between pages.
+Open Home and select a worksite. The main navigation contains Home, Worker safety, Work-zone planning, and Evidence & report. The four segments of the circle open the corresponding worker safety area. The selected worksite and its session records are retained while you move between pages.
 
 Choose Start guided demo for a five-step walkthrough. The guide stays above the workspace so you can operate the page. Use Next step, Previous, or Exit guide at any time. If you explore another screen, Return to this step restores the guide’s current area. The guide does not erase existing records.
 
@@ -48,7 +48,6 @@ Configuration checks lists remaining gaps. Confirm demo configuration is availab
 
 Official road context is collapsed by default on this page. Open it to inspect SCATS historical detector counts and Vicmap road geometry. The packaged traffic date is 27 September 2026, with 96 quarter-hour intervals. Select a detector and time interval. Missing values stay unavailable, not zero. Counts are detector activations, not a junction-wide count of unique vehicles. Refresh roads refreshes the Vicmap layer only; it does not import a new SCATS date. Failed refreshes retain saved geometry and show its status.
 
-Open work-zone planning from the supporting card to compare plans, pedestrian and bus effects, and equipment needs. Choosing a plan there does not automatically move the warning-sign worker or confirm a safety configuration.
 
 ## 04 · Multi-site supervision
 
@@ -68,7 +67,15 @@ The queue calculation is a constant-demand fluid model with 7 metres per equival
 
 ## Work-zone planning
 
-Enter from Site layout. Plan comparison lets you edit demand, analysis duration, additional barriers and pedestrian/bus route availability. Compare Plan A and Plan B under the same assumptions, then choose a plan. Equipment quantities feed the illustrative fleet delivery model. Worker safety configurations remain independent.
+Open Work-zone planning from the main navigation. Plan & simulate follows five steps shown across the top: choose location, configure the work zone, choose equipment, run the simulation and view the impact.
+
+- Planned work zone: enter an address, start and end time, closure type (full, partial or shoulder), lanes affected and optional notes. Swan Street/Church Street Cremorne, Bridge Road Richmond and City Road Southbank addresses show real Vicmap roads; any other address shows a mock street map. The planned work zone is drawn in orange.
+- Deployable equipment: pick a category tab (Signage, Electronic, Lighting, Barriers, Crash cushions, Other) and use − / + to set quantities. Tab badges show how many items are selected in each category.
+- Run simulation shows six predicted impacts: congestion, queue length, travel delay, public transport, pedestrian impact and safety risk. If you change any setting afterwards, the results fade and ask you to run again.
+- Saved plans: Save as Plan A, then Create alternative plan, change the closure or equipment and Save as Plan B (up to four plans). Click a plan to reload it. With two or more plans a comparison table highlights the lowest estimated impact per metric.
+- Select for deployment: choose the plan you will deploy. It is marked with a green badge, and a short summary (location, time, closure, equipment, expected impact and the plans it was chosen over) appears in Evidence & report and in the JSON and CSV exports. If you edit that plan afterwards, the report keeps the version you selected until you select it again.
+
+All predicted impacts are mock estimates from simple demonstration rules, not a traffic simulation. Plans last for the page session and do not change worker safety configurations.
 
 Public works notices is now a section inside this tool. It remains available for all three sites, separately from the Cremorne-only planning model. Select the site at the top, enter start/end times and public advice, confirm the details, and choose Update map preview. Extend by 2 hours changes the draft and requires reconfirmation. Finish works removes the notice. This updates only the session map; it sends nothing to government systems, Google Maps or Waze. Public notices exclude worker identity, health and event information.
 

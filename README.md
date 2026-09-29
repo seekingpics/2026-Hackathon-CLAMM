@@ -8,15 +8,15 @@ Run `node server.mjs` and open http://127.0.0.1:5173/. The existing Start-Demo.c
 
 ## Present the demo
 
-Home provides circular navigation, Start guided demo, and Vehicle approach / Worker SOS / Extended duty shortcuts. The primary navigation contains Home, Worker safety, Evidence & report. Full instructions are in [OPERATING-GUIDE.md](OPERATING-GUIDE.md), also served at /operating-guide.html.
+Home provides circular navigation, Start guided demo, and Vehicle approach / Worker SOS / Extended duty shortcuts. The primary navigation contains Home, Worker safety, Work-zone planning, Evidence & report. Full instructions are in [OPERATING-GUIDE.md](OPERATING-GUIDE.md), also served at /operating-guide.html.
 
-Worker safety has four areas: On-site protection, Workers & support, Site layout, Multi-site supervision. Public works notices lives in Work-zone planning.
+Worker safety has four areas: On-site protection, Workers & support, Site layout, Multi-site supervision. Work-zone planning is its own page: Plan & simulate (location → work zone → equipment → simulation → predicted impacts, with saved plan comparison) and Public works notices. Its impacts are mock estimates.
 
 ## Model boundaries
 
 - Worker safety has independent worksite configurations, clocks and events. Moving objects trigger alerts by position, before acknowledgement.
 - Queue warnings uses a separate model clock. It does not send wearable alerts. SCATS historical counts do not drive live queue detection.
-- Work-zone plan and equipment changes affect queue and fleet models, not worker placement or site configuration approval.
+- Work-zone planning estimates are mock demonstration rules. They do not affect worker placement, site configuration approval, or the queue and fleet models.
 - Fleet feasibility does not confirm arrival or site readiness. Five-year costs use independent annual mileage.
 - Supporting models are an illustrative Cremorne example. Richmond and Southbank show unmodelled states; their worker safety and notices remain available.
 - Official SCATS and Vicmap context is real; operations, workers, weather and devices are simulated. Source details: [R1-DATA-SOURCES.md](R1-DATA-SOURCES.md).
@@ -28,7 +28,8 @@ Worker safety has four areas: On-site protection, Workers & support, Site layout
 - dist/home.mjs / workspace.css: landing page and shared presentation.
 - dist/connected-context.mjs: scoped supporting summaries and evidence report.
 - dist/safety*.mjs / worker-support.mjs / on-site-display.mjs: worker safety behaviours.
-- dist/model.mjs / views.mjs: existing queue, planning, fleet and cost models.
+- dist/work-zone.mjs / work-zone.css: Work-zone planning · Plan & simulate.
+- dist/model.mjs / views.mjs: existing queue, fleet and cost models.
 - dist/government-data.mjs / data/: official context and saved fallback data.
 
 ## Validate

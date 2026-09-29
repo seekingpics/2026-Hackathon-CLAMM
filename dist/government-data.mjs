@@ -61,20 +61,54 @@ function selectedDetector(id){const site=station(id);return site?.detectors.find
 export function governmentExport(){
   return{source:'Official public data; separate from simulated safety events',scats:state.scats,roadLayers:Object.fromEntries(Object.entries(state.roads).map(([id,r])=>[id,{status:r.status,fetchedAt:r.fetchedAt||r.meta?.fetchedAt,source:r.meta,features:r.data?.features||[]}]))};
 }
-export function roadMap(id,notice=false){
+function roadLayer(id){
   const r=state.roads[id],s=station(id);
-  if(!r?.data||!s)return '<div class="gov-empty">'+(state.ready?'Road geometry unavailable.':'Loading official road geometry…')+'</div>';
+  if(!r?.data||!s)return null;
   const centre=[s.longitude,s.latitude],scale=.58,cos=Math.cos(centre[1]*Math.PI/180);
   const project=p=>[270+(p[0]-centre[0])*111320*cos*scale,160-(p[1]-centre[1])*111320*scale];
   const path=line=>line.map((p,i)=>{const q=project(p);return(i?'L':'M')+q[0].toFixed(2)+' '+q[1].toFixed(2);}).join(' ');
-  const names=new Set(),labels=[];
+  const names=new Set(),labels=[],roads=[];
   const paths=r.data.features.map(f=>{
     const p=f.properties||{},name=p.ezi_road_name||p.road_name||'Unnamed road',lines=f.geometry.type==='LineString'?[f.geometry.coordinates]:f.geometry.coordinates;
     const priority=Number(p.class_code)<=3;
-    for(const line of lines){const point=project(line[Math.floor(line.length/2)]);if(priority&&!names.has(name)&&point[0]>45&&point[0]<430&&point[1]>38&&point[1]<278&&labels.length<5&&Math.abs(point[1]-160)>24){names.add(name);labels.push('<text x="'+point[0].toFixed(1)+'" y="'+(point[1]-8).toFixed(1)+'">'+esc(name)+'</text>');}}
+    for(const line of lines){roads.push({name,priority,points:line.map(project)});const point=project(line[Math.floor(line.length/2)]);if(priority&&!names.has(name)&&point[0]>45&&point[0]<430&&point[1]>38&&point[1]<278&&labels.length<5&&Math.abs(point[1]-160)>24){names.add(name);labels.push('<text x="'+point[0].toFixed(1)+'" y="'+(point[1]-8).toFixed(1)+'">'+esc(name)+'</text>');}}
     return lines.map(line=>'<path d="'+path(line)+'" class="'+(priority?'gov-road-main':'gov-road-local')+'"><title>'+esc(name)+'</title></path>').join('');
   }).join('');
-  return '<svg class="gov-map" viewBox="0 0 540 320" role="img" aria-label="Official Vicmap road centrelines near '+esc(s.name)+'"><defs><clipPath id="road-clip-'+id+'"><rect width="540" height="320"/></clipPath></defs><rect width="540" height="320" fill="#edf3f5"/><g clip-path="url(#road-clip-'+id+')">'+paths+'<g class="gov-map-label">'+labels.join('')+'</g></g><circle cx="270" cy="160" r="17" fill="'+(notice?'#efbb42':'#166788')+'" stroke="white" stroke-width="4"/><text x="270" y="165" fill="white" text-anchor="middle" font-size="13" font-weight="700">'+(notice?'W':'S')+'</text><rect x="16" y="16" width="190" height="27" rx="4" fill="white"/><text x="26" y="34" fill="#264c60" font-size="13">SCATS '+s.scatsSiteId+' · '+(notice?'Notice preview':'Reference junction')+'</text><text x="510" y="27" fill="#264c60" font-size="14">N ↑</text><path d="M24 285h58m-58 -4v8m58 -8v8" stroke="#264c60" stroke-width="2"/><text x="24" y="305" fill="#264c60" font-size="12">100 m</text></svg>';
+  return {s,paths,labels,roads};
+}
+// height>320 widens the view above and below the site centre and lets the SVG fill a taller box (slice),
+// keeping the north arrow and scale bar clear of the edges that slice may crop.
+const mapFrame=(id,label,body,overlay,height=320)=>{
+  const top=160-height/2,bottom=top+height,tall=height>320,left=tall?44:24,right=tall?486:510,inset=tall?28:0;
+  return '<svg class="gov-map" viewBox="0 '+top+' 540 '+height+'"'+(tall?' preserveAspectRatio="xMidYMid slice"':'')+' role="img" aria-label="'+label+'"><defs><clipPath id="road-clip-'+id+'"><rect y="'+top+'" width="540" height="'+height+'"/></clipPath></defs><rect y="'+top+'" width="540" height="'+height+'" fill="#edf3f5"/><g clip-path="url(#road-clip-'+id+')">'+body+'</g>'+overlay+'<text x="'+right+'" y="'+(top+27+inset)+'" fill="#264c60" font-size="14">N ↑</text><path d="M'+left+' '+(bottom-35-inset)+'h58m-58 -4v8m58 -8v8" stroke="#264c60" stroke-width="2"/><text x="'+left+'" y="'+(bottom-15-inset)+'" fill="#264c60" font-size="12">100 m</text></svg>';
+};
+export function roadMap(id,notice=false){
+  const layer=roadLayer(id);
+  if(!layer)return '<div class="gov-empty">'+(state.ready?'Road geometry unavailable.':'Loading official road geometry…')+'</div>';
+  const {s,paths,labels}=layer;
+  return mapFrame(id,'Official Vicmap road centrelines near '+esc(s.name),paths+'<g class="gov-map-label">'+labels.join('')+'</g>','<circle cx="270" cy="160" r="17" fill="'+(notice?'#efbb42':'#166788')+'" stroke="white" stroke-width="4"/><text x="270" y="165" fill="white" text-anchor="middle" font-size="13" font-weight="700">'+(notice?'W':'S')+'</text><rect x="16" y="16" width="190" height="27" rx="4" fill="white"/><text x="26" y="34" fill="#264c60" font-size="13">SCATS '+s.scatsSiteId+' · '+(notice?'Notice preview':'Reference junction')+'</text>');
+}
+// Real roads with the planned work zone drawn on the main road nearest the site centre.
+// Returns null until road data has loaded so the caller can show a fallback.
+export function workZoneMap(id,lengthPx=90){
+  const layer=roadLayer(id);if(!layer)return null;
+  const {s,paths,labels,roads}=layer,dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+  let best=null;
+  for(const road of roads)if(road.priority)road.points.forEach(q=>{const d=dist(q,[270,160]);if(!best||d<best.d)best={road,d};});
+  let zone='',name=s.name;
+  if(best){
+    name=best.road.name;
+    // Road centrelines are split at every junction, so densify every piece of the chosen road,
+    // centre the zone a short way along it from the reference junction, and clip to lengthPx.
+    const lines=roads.filter(r=>r.name===name).map(r=>r.points.flatMap((q,i)=>{if(!i)return [q];const prev=r.points[i-1],n=Math.max(1,Math.ceil(dist(prev,q)/2));return Array.from({length:n},(_,k)=>[prev[0]+(q[0]-prev[0])*(k+1)/n,prev[1]+(q[1]-prev[1])*(k+1)/n]);}));
+    let centre=best.road.points[0],gap=Infinity;
+    for(const line of lines)for(const q of line){const g=Math.abs(dist(q,[270,160])-lengthPx*.65);if(g<gap){gap=g;centre=q;}}
+    const runs=[];
+    for(const line of lines){let run=[];for(const q of line){if(dist(q,centre)<=lengthPx/2)run.push(q);else if(run.length){runs.push(run);run=[];}}if(run.length)runs.push(run);}
+    const d=runs.filter(r=>r.length>1).map(r=>r.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' ')).join(' ');
+    if(d)zone='<path d="'+d+'" class="wz-zone-glow"/><path d="'+d+'" class="wz-zone"/><path d="'+d+'" class="wz-zone-dash"/>';
+  }
+  return {svg:mapFrame('wz-'+id,'Planned work zone on '+esc(name)+' near '+esc(s.name),paths+zone+'<g class="gov-map-label">'+labels.join('')+'</g>','',460),road:name};
 }
 export function roadCaption(id){
   const r=state.roads[id];

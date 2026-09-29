@@ -3,18 +3,20 @@ import assert from 'node:assert/strict';
 import {createSafety,selectedSite,safetyAction,tickSafety,safetyExport} from '../dist/safety-model.mjs';
 import {DEFAULTS,snapshot} from '../dist/model.mjs';
 import {supportingCard,supportingSnapshot,evidencePage} from '../dist/connected-context.mjs';
+import {workZone,workZoneAction} from '../dist/work-zone.mjs';
 import {governmentPanel} from '../dist/government-data.mjs';
 import {safetyPage,publicNoticePage,workerSafety} from '../dist/safety.mjs';
 
 const st={plan:'A',assumptions:{...DEFAULTS},time:480,history:[],acknowledged:[]};
 test('other worksites never inherit Cremorne model metrics in supporting summaries',()=>{
  const ws=createSafety(),s=snapshot(st);
- for(const site of ws.sites.slice(1))for(const tab of ['live','layout','supervisor']){
+ for(const site of ws.sites.slice(1))for(const tab of ['live','supervisor']){
   const html=supportingCard(tab,site,s,st);
   assert.match(html,/NOT YET MODELLED/);assert.match(html,new RegExp(site.name));
   assert.doesNotMatch(html,/140 m|60 km\/h|8,250|30\.0 \/ 48/);
  }
  assert.equal(supportingCard('worker',ws.sites[0],s,st),'');
+ assert.equal(supportingCard('layout',ws.sites[0],s,st),'','Work-zone planning is its own page, not a Worker safety card');
  assert.match(supportingCard('live',ws.sites[0],s,st),/140 m/);
 });
 test('supporting snapshots label their independent site and time without changing safety records',()=>{
@@ -40,4 +42,12 @@ test('worker safety has four core areas and notices retain an independent planni
  assert.doesNotMatch(html,/data-ws="tab" data-value="public"/);
  assert.match(publicNoticePage(),/Works details & publication preview/);
  assert.doesNotMatch(governmentPanel(workerSafety.sites[0],'layout'),/<details[^>]*\sopen[\s>]/);
+});
+test('evidence report shows the plan selected for deployment',()=>{
+ const ws=createSafety(),s=snapshot(st);
+ assert.match(evidencePage(s,st,safetyExport(ws),{}),/No plan has been selected for deployment yet/);
+ workZone.form.location='Swan Street, Cremorne';workZoneAction('save');workZoneAction('select-deploy',{name:workZone.plans[0].name});
+ const html=evidencePage(s,st,safetyExport(ws),{});
+ assert.match(html,/Selected deployment plan/);assert.match(html,/selected for deployment at Swan Street, Cremorne/);
+ workZoneAction('clear-deploy');
 });
