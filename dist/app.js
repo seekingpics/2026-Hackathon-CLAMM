@@ -9,7 +9,7 @@ import {VIEWS,workerSummary,balance} from './views.mjs';
 
 const app=document.querySelector('#app');
 const NAV=[['home','Home','home'],['safety','Worker safety','shield'],['report','Evidence & report','report']];
-const TABS={live:'On-site protection',nav:'Navigation map',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
+const TABS={live:'On-site protection','road-user-notification':'Road User Notification',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
 const state={view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,planningTab:'plans',toolExample:false,returnTo:{site:'CR',tab:'live'}};
 let exportPreview=null,versionCounter=1,cachedKey='',cachedSnapshot,enterNext=false;
 const isTool=()=>Boolean(SUPPORT_TOOLS[state.view]);
@@ -169,6 +169,7 @@ app.addEventListener('toggle',e=>{if(e.target.dataset?.governmentDetails)setGove
 window.addEventListener('popstate',()=>{readRoute();render();});
 window.addEventListener('hashchange',()=>{readRoute();render();});
 document.addEventListener('keydown',e=>{
+ if(['Enter',' '].includes(e.key)&&e.target.matches('svg [role=button][data-ws]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}));return;}
  if(e.key==='Escape'&&state.dialog){state.dialog=null;render();}
  if(e.key==='Tab'&&state.dialog){const controls=[...document.querySelectorAll('.dialog button:not([disabled]), .dialog textarea, .dialog input')],first=controls[0],last=controls.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
 });
