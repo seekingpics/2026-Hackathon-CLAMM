@@ -3,7 +3,7 @@ import {supportingCard,supportingSnapshot,evidencePage,FUNCTION_NAMES,functionNa
 import {initialiseGovernmentData,refreshRoads,setGovernmentControl,governmentExport,workZoneMap} from './government-data.mjs';
 import {workZonePage,workZoneAction,KNOWN_LOCATIONS,deploymentSummary} from './work-zone.mjs';
 import {selectedSite,activeEvents,validity,stamp,STAGES} from './safety-model.mjs';
-import {safetyPage,publicNoticePage,setSafetyExtension,workerSafety,handleSafetyAction,handleSafetyInput,handleSafetyFile,refreshSafety,exportSafety,paintSafety} from './safety.mjs';
+import {safetyPage,setSafetyExtension,workerSafety,handleSafetyAction,handleSafetyInput,handleSafetyFile,refreshSafety,exportSafety,paintSafety} from './safety.mjs';
 import {DEFAULTS,PLANS,SCENARIOS,validateAssumptions,snapshot,comparePlans,formatTime} from './model.mjs';
 import {esc,btn,metrics,road,events,signs,queueChart} from './visuals.mjs';
 import {VIEWS,workerSummary,balance} from './views.mjs';
@@ -11,7 +11,7 @@ import {VIEWS,workerSummary,balance} from './views.mjs';
 const app=document.querySelector('#app');
 const NAV=[['home','Home','home'],['safety','Worker safety','shield'],['planning','Work-zone planning','pin'],['report','Evidence & report','report']];
 const TABS={live:'On-site protection',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
-const state={view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,planningTab:'plans',toolExample:false,returnTo:{site:'CR',tab:'live'}};
+const state={view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,toolExample:false,returnTo:{site:'CR',tab:'live'}};
 let exportPreview=null,versionCounter=1,cachedKey='',cachedSnapshot,enterNext=false;
 const isTool=()=>Boolean(SUPPORT_TOOLS[state.view]);
 const modelAvailable=()=>workerSafety.selected==='CR'||state.toolExample;
@@ -32,14 +32,12 @@ function toast(message){const el=document.querySelector('#toast');el.textContent
 function bump(){state.version=++versionCounter;state.playing=false;state.time=Math.min(state.time,state.assumptions.horizon);}
 function scenario(id){const v=SCENARIOS[id];if(!v)return;Object.assign(state,{scenario:id,feed:v.feed,time:Math.min(v.time,state.assumptions.horizon),injectAt:null,lastBreak:0});state.assumptions.demand=v.demand;bump();}
 function setPlan(plan){if(!PLANS[plan])throw Error('Unknown plan');state.plan=plan;bump();}
-function routeHash(){return state.view==='safety'?`#safety/${workerSafety.tab}`:state.view==='planning'&&state.planningTab==='notices'?'#planning/notices':`#${state.view}`;}
+function routeHash(){return state.view==='safety'?`#safety/${workerSafety.tab}`:`#${state.view}`;}
 function updateRoute(replace=false){const hash=routeHash();if(location.hash!==hash)history[replace?'replaceState':'pushState'](null,'',hash);}
 function readRoute(){
  const [view,sub]=(location.hash.slice(1)||'home').split('/');
  state.view=['home','safety','report',...Object.keys(SUPPORT_TOOLS)].includes(view)?view:'home';
  if(state.view==='safety'&&TABS[sub])workerSafety.tab=sub;
- if(view==='safety'&&sub==='public'){state.view='planning';state.planningTab='notices';}
- else if(view==='planning')state.planningTab=sub==='notices'?'notices':'plans';
  state.playing=false;
 }
 function navigate(view){if(view!==state.view)enterNext=true;state.view=view;state.playing=false;state.toolExample=false;updateRoute();window.scrollTo({top:0,behavior:'instant'});}
@@ -47,7 +45,7 @@ function openArea(tab){if(!TABS[tab])return;if(tab!==workerSafety.tab||state.vie
 function openTool(tool){
  if(!SUPPORT_TOOLS[tool])return;
  if(!isTool())state.returnTo={site:workerSafety.selected,tab:state.view==='safety'?workerSafety.tab:SUPPORT_TOOLS[tool].tab};
- state.toolExample=false;state.planningTab='plans';navigate(tool);
+ state.toolExample=false;navigate(tool);
 }
 function returnToSafety(){handleSafetyAction('site',state.returnTo.site);handleSafetyAction('tab',state.returnTo.tab);navigate('safety');}
 function launchScenario(mode){
@@ -71,11 +69,9 @@ function guideMarkup(){
 }
 function controls(){return `<div class="controlbar"><label>MODEL SCENARIO <select id="scenario" aria-label="Model scenario">${Object.entries(SCENARIOS).map(([id,s])=>`<option value="${id}" ${state.scenario===id?'selected':''}>${s.name}</option>`).join('')}${state.scenario==='custom'?'<option selected value="custom">Custom scenario</option>':''}</select></label><div class="plan-switch" aria-label="Active plan">${['A','B'].map(p=>`<button data-action="plan-${p}" class="${p===state.plan?'selected':''}" aria-pressed="${p===state.plan}">Plan ${p}</button>`).join('')}</div>${state.view==='queue'?`<div class="actions">${btn(state.playing?'Pause':'Play model','play','small')}${btn('Reset model','reset','small')}<select id="speed" aria-label="Model playback speed">${[1,10,30].map(n=>`<option value="${n}" ${n===state.speed?'selected':''}>${n}×</option>`).join('')}</select></div><div class="clock" data-live="clock">${clock()}<small>Independent model time</small></div><label style="flex:1;min-width:160px">MODEL REPLAY <input id="scrubber" type="range" min="0" max="${state.assumptions.horizon}" step="1" value="${Math.floor(state.time)}" aria-label="Model replay time"></label>`:''}</div>`;}
 function toolContent(s){
- const site=selectedSite(workerSafety),config=SUPPORT_TOOLS[state.view],isNotices=state.view==='planning'&&state.planningTab==='notices';
- const tabs=state.view==='planning'?`<nav class="tool-tabs" aria-label="Work-zone planning sections">${btn('Plan & simulate','planning-plans',state.planningTab==='plans'?'selected':'')}${btn('Public works notices','planning-notices',isNotices?'selected':'')}</nav>`:'';
- const intro=state.view==='planning'?tabs:`<div class="tool-back">${btn('Back to Worker safety','back-safety')}<p>Supporting tool / ${config.title}</p></div>${tabs}`;
- if(isNotices)return intro+`<div class="notice-wrapper">${publicNoticePage()}</div>`;
- if(state.view==='planning')return intro+workZonePage(workZoneMap);
+ if(state.view==='planning')return workZonePage(workZoneMap);
+ const site=selectedSite(workerSafety),config=SUPPORT_TOOLS[state.view];
+ const intro=`<div class="tool-back">${btn('Back to Worker safety','back-safety')}<p>Supporting tool / ${config.title}</p></div>`;
  if(!modelAvailable())return intro+`<section class="tool-empty"><span class="eyebrow">${esc(site.name).toUpperCase()}</span><h2>This worksite has not been modelled yet.</h2><p>${config.title} currently has a Cremorne demonstration model. Its results are not estimates for ${esc(site.name)}.</p>${btn('Explore Cremorne example','tool-example','primary')}</section>`;
  const description=state.view==='queue'?'This replay uses its own model clock. It does not follow the on-site animation, send watch alerts or use SCATS as a live queue detector.':state.view==='planning'?'Plan changes update the queue and equipment-delivery models. Review the worker position and safety configuration separately in Site layout.':'Dispatch feasibility checks jobs, payload and battery reserve. It does not confirm physical delivery, equipment availability on site or worksite readiness.';
  return intro+`<div class="tool-notice"><strong>Cremorne illustrative model</strong>${site.id!=='CR'?` · Opened from ${esc(site.name)}; selected worksite retained.`:''}<br>${description}</div>${controls()}${VIEWS[state.view](s,state)}`;
@@ -128,8 +124,6 @@ app.addEventListener('click',event=>{
   else switch(action){
    case 'back-safety':returnToSafety();break;
    case 'tool-example':state.toolExample=true;break;
-   case 'planning-plans':state.planningTab='plans';updateRoute();break;
-   case 'planning-notices':state.planningTab='notices';state.playing=false;updateRoute();break;
    case 'tour-start':guideStep(0);break;
    case 'tour':guideStep(state.guide??0);break;
    case 'guide-return':guideStep(state.guide);break;
@@ -146,7 +140,7 @@ app.addEventListener('click',event=>{
    case 'charger':state.assumptions.chargerAvailable=!state.assumptions.chargerAvailable;bump();break;
    case 'ack':if(!state.acknowledged.includes(button.dataset.id))state.acknowledged.push(button.dataset.id);toast('Receipt recorded. The modelled risk is unchanged.');break;
    case 'inspect':state.playing=false;state.dialog=button.dataset.id;break;
-   case 'replay-event':{const e=state.history.find(x=>x.id===button.dataset.id);if(e){state.returnTo={site:workerSafety.selected,tab:workerSafety.tab};Object.assign(state,e.config,{assumptions:{...e.config.assumptions},playing:false,dialog:null,view:e.module==='R4'?'fleet':e.module==='R3'?'planning':'queue',toolExample:true,planningTab:'plans'});updateRoute();}break;}
+   case 'replay-event':{const e=state.history.find(x=>x.id===button.dataset.id);if(e){state.returnTo={site:workerSafety.selected,tab:workerSafety.tab};Object.assign(state,e.config,{assumptions:{...e.config.assumptions},playing:false,dialog:null,view:e.module==='R4'?'fleet':e.module==='R3'?'planning':'queue',toolExample:true});updateRoute();}break;}
    case 'worker-event':handleSafetyAction('site',button.dataset.site);if(button.dataset.worker)handleSafetyAction('worker-select',button.dataset.worker);openArea(button.dataset.kind==='support'?'worker':'supervisor');break;
    case 'close':state.dialog=null;break;
    case 'export':showExport();break;

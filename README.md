@@ -10,7 +10,7 @@ Run `node server.mjs` and open http://127.0.0.1:5173/. The existing Start-Demo.c
 
 Home provides circular navigation, Start guided demo, and Vehicle approach / Worker SOS / Extended duty shortcuts. The primary navigation contains Home, Worker safety, Work-zone planning, Evidence & report. Full instructions are in [OPERATING-GUIDE.md](OPERATING-GUIDE.md), also served at /operating-guide.html.
 
-Worker safety has four areas: On-site protection, Workers & support, Site layout, Multi-site supervision. Work-zone planning is its own page: Plan & simulate (location → work zone → equipment → simulation → predicted impacts, with saved plan comparison) and Public works notices. Its impacts are mock estimates.
+Worker safety has four areas: On-site protection, Workers & support, Site layout, Multi-site supervision. Work-zone planning is its own page for planning and simulating a work zone (location → work zone → equipment → simulation → predicted impacts, with saved plan comparison). Its impacts are mock estimates.
 
 ## Model boundaries
 
@@ -18,7 +18,7 @@ Worker safety has four areas: On-site protection, Workers & support, Site layout
 - Queue warnings uses a separate model clock. It does not send wearable alerts. SCATS historical counts do not drive live queue detection.
 - Work-zone planning estimates are mock demonstration rules. They do not affect worker placement, site configuration approval, or the queue and fleet models.
 - Fleet feasibility does not confirm arrival or site readiness. Five-year costs use independent annual mileage.
-- Supporting models are an illustrative Cremorne example. Richmond and Southbank show unmodelled states; their worker safety and notices remain available.
+- Supporting models are an illustrative Cremorne example. Richmond and Southbank show unmodelled states; their worker safety remains available.
 - Official SCATS and Vicmap context is real; operations, workers, weather and devices are simulated. Source details: [R1-DATA-SOURCES.md](R1-DATA-SOURCES.md).
 - Records last for the page session. Export JSON/CSV before reloading. No physical equipment, live CCTV or Apple Watch hardware is connected.
 

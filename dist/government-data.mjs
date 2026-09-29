@@ -82,11 +82,11 @@ const mapFrame=(id,label,body,overlay,height=320)=>{
   const top=160-height/2,bottom=top+height,tall=height>320,left=tall?44:24,right=tall?486:510,inset=tall?28:0;
   return '<svg class="gov-map" viewBox="0 '+top+' 540 '+height+'"'+(tall?' preserveAspectRatio="xMidYMid slice"':'')+' role="img" aria-label="'+label+'"><defs><clipPath id="road-clip-'+id+'"><rect y="'+top+'" width="540" height="'+height+'"/></clipPath></defs><rect y="'+top+'" width="540" height="'+height+'" fill="#edf3f5"/><g clip-path="url(#road-clip-'+id+')">'+body+'</g>'+overlay+'<text x="'+right+'" y="'+(top+27+inset)+'" fill="#264c60" font-size="14">N ↑</text><path d="M'+left+' '+(bottom-35-inset)+'h58m-58 -4v8m58 -8v8" stroke="#264c60" stroke-width="2"/><text x="'+left+'" y="'+(bottom-15-inset)+'" fill="#264c60" font-size="12">100 m</text></svg>';
 };
-export function roadMap(id,notice=false){
+export function roadMap(id){
   const layer=roadLayer(id);
   if(!layer)return '<div class="gov-empty">'+(state.ready?'Road geometry unavailable.':'Loading official road geometry…')+'</div>';
   const {s,paths,labels}=layer;
-  return mapFrame(id,'Official Vicmap road centrelines near '+esc(s.name),paths+'<g class="gov-map-label">'+labels.join('')+'</g>','<circle cx="270" cy="160" r="17" fill="'+(notice?'#efbb42':'#166788')+'" stroke="white" stroke-width="4"/><text x="270" y="165" fill="white" text-anchor="middle" font-size="13" font-weight="700">'+(notice?'W':'S')+'</text><rect x="16" y="16" width="190" height="27" rx="4" fill="white"/><text x="26" y="34" fill="#264c60" font-size="13">SCATS '+s.scatsSiteId+' · '+(notice?'Notice preview':'Reference junction')+'</text>');
+  return mapFrame(id,'Official Vicmap road centrelines near '+esc(s.name),paths+'<g class="gov-map-label">'+labels.join('')+'</g>','<circle cx="270" cy="160" r="17" fill="#166788" stroke="white" stroke-width="4"/><text x="270" y="165" fill="white" text-anchor="middle" font-size="13" font-weight="700">S</text><rect x="16" y="16" width="190" height="27" rx="4" fill="white"/><text x="26" y="34" fill="#264c60" font-size="13">SCATS '+s.scatsSiteId+' · Reference junction</text>');
 }
 // Real roads with the planned work zone drawn on the main road nearest the site centre.
 // Returns null until road data has loaded so the caller can show a fallback.

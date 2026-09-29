@@ -12,7 +12,7 @@ All 46 checks passed by running the five test files directly:
 
 The combined command `node --test tests/*.test.mjs` was blocked by the execution sandbox with a subprocess spawn `EPERM` error. Direct execution of each file completed successfully in that environment.
 
-Source inspection confirms the current navigation: Home, Worker safety, Work-zone planning and Evidence & report. Worker safety has On-site protection, Workers & support, Site layout and Multi-site supervision tabs. Work-zone planning is a standalone page containing Public works notices; supporting routes provide Queue warnings and Fleet & charging. This inspection and the automated checks do not constitute a new browser verification.
+Source inspection confirms the current navigation: Home, Worker safety, Work-zone planning and Evidence & report. Worker safety has On-site protection, Workers & support, Site layout and Multi-site supervision tabs. Work-zone planning is a standalone page for planning and simulating a work zone; supporting routes provide Queue warnings and Fleet & charging. This inspection and the automated checks do not constitute a new browser verification.
 
 ## Earlier browser verification — 2026-09-29
 

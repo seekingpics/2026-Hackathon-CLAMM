@@ -5,7 +5,7 @@ import {DEFAULTS,snapshot} from '../dist/model.mjs';
 import {supportingCard,supportingSnapshot,evidencePage} from '../dist/connected-context.mjs';
 import {workZone,workZoneAction} from '../dist/work-zone.mjs';
 import {governmentPanel} from '../dist/government-data.mjs';
-import {safetyPage,publicNoticePage,workerSafety} from '../dist/safety.mjs';
+import {safetyPage,workerSafety} from '../dist/safety.mjs';
 
 const st={plan:'A',assumptions:{...DEFAULTS},time:480,history:[],acknowledged:[]};
 test('other worksites never inherit Cremorne model metrics in supporting summaries',()=>{
@@ -36,11 +36,10 @@ test('report combines worker event audit and scoped supporting evidence using fu
  assert.match(html,/Handover|handover/);assert.match(html,/Queue warnings/);assert.match(html,/Fleet &amp; charging|Fleet & charging/);
  assert.doesNotMatch(html,/\bR[1-4]\b/);
 });
-test('worker safety has four core areas and notices retain an independent planning surface',()=>{
+test('worker safety has four core areas',()=>{
  workerSafety.tab='live';const html=safetyPage();
  assert.equal((html.match(/data-ws="tab" data-value="(?:live|worker|layout|supervisor)" class="/g)||[]).length,4);
  assert.doesNotMatch(html,/data-ws="tab" data-value="public"/);
- assert.match(publicNoticePage(),/Works details & publication preview/);
  assert.doesNotMatch(governmentPanel(workerSafety.sites[0],'layout'),/<details[^>]*\sopen[\s>]/);
 });
 test('evidence report shows the plan selected for deployment',()=>{

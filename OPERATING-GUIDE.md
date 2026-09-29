@@ -67,7 +67,7 @@ The queue calculation is a constant-demand fluid model with 7 metres per equival
 
 ## Work-zone planning
 
-Open Work-zone planning from the main navigation. Plan & simulate follows five steps shown across the top: choose location, configure the work zone, choose equipment, run the simulation and view the impact.
+Open Work-zone planning from the main navigation. The page follows five steps shown across the top: choose location, configure the work zone, choose equipment, run the simulation and view the impact.
 
 - Planned work zone: enter an address, start and end time, closure type (full, partial or shoulder), lanes affected and optional notes. Swan Street/Church Street Cremorne, Bridge Road Richmond and City Road Southbank addresses show real Vicmap roads; any other address shows a mock street map. The planned work zone is drawn in orange.
 - Deployable equipment: pick a category tab (Signage, Electronic, Lighting, Barriers, Crash cushions, Other) and use − / + to set quantities. Tab badges show how many items are selected in each category.
@@ -76,8 +76,6 @@ Open Work-zone planning from the main navigation. Plan & simulate follows five s
 - Select for deployment: choose the plan you will deploy. It is marked with a green badge, and a short summary (location, time, closure, equipment, expected impact and the plans it was chosen over) appears in Evidence & report and in the JSON and CSV exports. If you edit that plan afterwards, the report keeps the version you selected until you select it again.
 
 All predicted impacts are mock estimates from simple demonstration rules, not a traffic simulation. Plans last for the page session and do not change worker safety configurations.
-
-Public works notices is now a section inside this tool. It remains available for all three sites, separately from the Cremorne-only planning model. Select the site at the top, enter start/end times and public advice, confirm the details, and choose Update map preview. Extend by 2 hours changes the draft and requires reconfirmation. Finish works removes the notice. This updates only the session map; it sends nothing to government systems, Google Maps or Waze. Public notices exclude worker identity, health and event information.
 
 ## Fleet & charging
 
@@ -101,7 +99,7 @@ The export dialog also provides the full contents for browsers that do not save 
 
 Real context: packaged SCATS historical counts, official signal positions, and saved/refreshable Vicmap roads. The Site layout source panel includes source links, dates, status and attribution to the State of Victoria (DTP), CC BY 4.0.
 
-Simulated: vehicle/pedestrian tracks, worker readings, weather, wearable alerts, connectivity, supervisor response, works notices, queues, planning and fleet results. There is no CCTV inference, connected Apple Watch, physical haptic/sound output, medical diagnosis, live queue detection or physical sign control. Road incident APIs and licensed weather feeds are not connected.
+Simulated: vehicle/pedestrian tracks, worker readings, weather, wearable alerts, connectivity, supervisor response, queues, planning and fleet results. There is no CCTV inference, connected Apple Watch, physical haptic/sound output, medical diagnosis, live queue detection or physical sign control. Road incident APIs and licensed weather feeds are not connected.
 
 ## Suggested three-minute presentation
 

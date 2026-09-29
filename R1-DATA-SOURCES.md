@@ -8,7 +8,7 @@ SCATS data in dist/data/scats.json is a **published historical snapshot from 27 
 
 Vicmap Transport supplies anonymous GeoJSON within 400 m of each reference junction. The browser refreshes this road layer when the page loads or **Refresh roads** is pressed. Failed refreshes retain a saved layer marked unavailable/stale. No credential is embedded.
 
-Roads and reference coordinates are real. Worksites, worker states, moving-object scenarios, weather and works notices remain simulated. Road centrelines cannot establish lane widths, work-zone boundaries or safe worker separation.
+Roads and reference coordinates are real. Worksites, worker states, moving-object scenarios and weather remain simulated. Road centrelines cannot establish lane widths, work-zone boundaries or safe worker separation.
 
 ## Quality and attribution
 
@@ -44,4 +44,4 @@ Run node tests/model.test.mjs, node tests/safety.test.mjs and node tests/real-da
 
 Coverage includes trajectory-triggered delivery, no alarm on selection, normal passage, failed wearable delivery, re-entry, unread receipts, SCATS gaps/totals, WGS84 geometry and stale-layer recovery.
 
-Official road context is consolidated in Worker safety → Site layout. Public works notices retains its road map within Work-zone planning. On-site protection, Workers & support and Multi-site supervision do not repeat the context panel. Site layout also provides a conceptual warning-sign worker station and escape route, updated by the selected traffic approach. Obstructions, an escape route across traffic or a northern approach without a corner template show a review hold. This is not an approved field position.
+Official road context is consolidated in Worker safety → Site layout. On-site protection, Workers & support and Multi-site supervision do not repeat the context panel. Site layout also provides a conceptual warning-sign worker station and escape route, updated by the selected traffic approach. Obstructions, an escape route across traffic or a northern approach without a corner template show a review hold. This is not an approved field position.
