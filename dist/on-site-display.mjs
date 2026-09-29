@@ -19,6 +19,13 @@ export function renderObservation(site){
 // (sensor, detection zone, worker at risk, roadside sign). Moving objects carry data-live-object so the
 // page can move them smoothly without repainting the whole scene.
 export function liveObjectTransform(site,kind){const o=observeScene(site),v=kind==='person'?o.person:o.vehicle;return 'translate('+v.x.toFixed(1)+'px,'+v.y.toFixed(1)+'px)';}
+// Map ground in the Road User Notification style: light blocks, white road with a grey edge, dashed centre line.
+function sceneBase(corner){
+  const road='M0 175H800'+(corner?' M390 0V175':''),blocks=[[12,12,313,94],[455,12,333,94],[12,244,250,114],[276,244,250,114],[540,244,248,114]].concat(corner?[]:[[337,12,106,94]]);
+  return '<defs><pattern id="live-works" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="10" height="10" fill="#fff4e0"/><rect width="5" height="10" fill="#f28c2866"/></pattern></defs><rect width="800" height="370" fill="#eef1ec"/>'+
+    blocks.map(([x,y,w,h])=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="8" fill="#dfe4de"/>').join('')+'<rect x="620" y="22" width="150" height="74" rx="8" fill="#cfe3c6"/>'+
+    '<path d="'+road+'" fill="none" stroke="#c3cbc6" stroke-width="111"/><path d="'+road+'" fill="none" stroke="#fff" stroke-width="105"/><path d="M0 175H800" stroke="#aab4ba" stroke-width="2" stroke-dasharray="15 12"/>';
+}
 export function renderLiveScene(site,view){
   const o=observeScene(site),north=site.layout.workerZone==='north',observed=site.edge&&site.layout.power&&!site.occluded;
   const hot=view.phase==='detected'||view.phase==='responding',done=view.phase==='resolved';
@@ -30,7 +37,7 @@ export function renderLiveScene(site,view){
   const obj=site.case==='pedestrian'?o.person:o.vehicle;
   const distance=hot&&!view.pedestrian&&view.distance?'<g class="live-distance"><line x1="'+obj.x.toFixed(1)+'" y1="'+obj.y.toFixed(1)+'" x2="520" y2="'+workerY+'"/><rect x="'+((obj.x+520)/2-46).toFixed(1)+'" y="'+((obj.y+workerY)/2-13).toFixed(1)+'" width="92" height="24" rx="12"/><text x="'+((obj.x+520)/2).toFixed(1)+'" y="'+((obj.y+workerY)/2+4).toFixed(1)+'" text-anchor="middle">'+view.distance+' m to worker</text></g>':'';
   return '<div class="live-scene '+(hot?'is-hot':'')+'"><svg viewBox="0 0 800 370" role="img" aria-label="Simulated road scene: '+esc(view.title||'no scenario running')+'. The alert is raised when the moving object reaches the detection zone.">'+
-    '<rect width="800" height="370" fill="#e3ebe5"/><path d="M0 175H800'+(site.layout.template==='corner'?' M390 0V175':'')+'" fill="none" stroke="#576b72" stroke-width="105"/><path d="M0 175H800" stroke="#c7d4d4" stroke-width="2" stroke-dasharray="15 12"/>'+
+    sceneBase(site.layout.template==='corner')+
     '<text x="16" y="140" class="live-lane">← Westbound</text><text x="784" y="220" text-anchor="end" class="live-lane">Eastbound →</text>'+
     '<g class="live-vms '+(signOn?'is-on':'')+'"><rect x="24" y="14" width="176" height="58" rx="5"/><text x="112" y="39" text-anchor="middle">'+(signOn?'SLOW DOWN':'SIGN READY')+'</text><text x="112" y="59" text-anchor="middle">'+(signOn?'WORKERS AHEAD':'· · ·')+'</text><path d="M112 72V112"/><text x="112" y="116" text-anchor="middle" class="live-caption-text">Roadside sign</text></g>'+
     rect(o.restricted,'live-work-zone '+(hot&&!zone?'is-hot':''))+'<text x="'+(o.restricted.x+10)+'" y="'+(o.restricted.y+18)+'" class="live-zone-text">Restricted work zone</text>'+

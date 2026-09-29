@@ -7,20 +7,20 @@
 .live-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px;align-items:start}
 .live-main{display:flex;flex-direction:column;gap:16px;min-width:0}
 
-.live-scene{position:relative;border-radius:22px;overflow:hidden;background:#e3ebe5;box-shadow:0 1px 0 #d5dfe4}
+.live-scene{position:relative;border-radius:22px;overflow:hidden;background:#eef1ec;border:1px solid #d9e2e9;box-shadow:0 1px 0 #d5dfe4}
 .live-scene svg{display:block;width:100%;height:auto}
-.live-lane{font-size:12px;fill:#dce8e7}
+.live-lane{font-size:12px;font-weight:600;fill:#56656e}
 .live-vms rect{fill:#10171c;stroke:#3a464e;stroke-width:4;transition:filter .4s}
 .live-vms text{font:700 13px Consolas,monospace;letter-spacing:2px;fill:#55616a;transition:fill .4s}
 .live-vms path{stroke:#3a464e;stroke-width:5}
 .live-vms .live-caption-text{font:600 11px 'Segoe UI',Arial,sans-serif;letter-spacing:0;fill:#3f5463}
 .live-vms.is-on text:not(.live-caption-text){fill:#ffc53d}
 .live-vms.is-on rect{filter:drop-shadow(0 0 10px #ffc53d99);animation:liveSignOn .5s ease both}
-.live-work-zone{fill:#ffce4599;stroke:#b18b31;stroke-width:2;transition:fill .3s,stroke .3s}
+.live-work-zone{fill:url(#live-works);stroke:#e8710a;stroke-width:2;transition:fill .3s,stroke .3s}
 .live-work-zone.is-hot{stroke:#c8412e;animation:liveZonePulse .9s ease-in-out infinite alternate}
 .live-detect-zone{fill:#2b8c7e1a;stroke:#2b8c7e;stroke-width:2;stroke-dasharray:7 4;transition:fill .3s,stroke .3s}
 .live-detect-zone.is-hot{stroke:#c8412e;animation:liveZonePulse .9s ease-in-out infinite alternate}
-.live-zone-text{font-size:12px;font-weight:600;fill:#6b4d12}
+.live-zone-text{font-size:12px;font-weight:700;fill:#b45309;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
 .live-zone-text.is-hot{fill:#c8412e}
 .live-crew{fill:#fff9db;stroke:#d1b349;stroke-dasharray:5 3}
 .live-worker{fill:#ffce45;stroke:#172e3f;stroke-width:3}
@@ -29,14 +29,14 @@
 .live-ring.is-hot{stroke:#c8412e;animation:liveRing 1s ease-in-out infinite alternate}
 .live-ring.is-safe{stroke:#1f7a5a}
 .live-sensor circle{fill:#112637}.live-sensor path{fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round}
-.live-sensor text{font-size:11px;font-weight:600;fill:#112637}
+.live-sensor text{font-size:11px;font-weight:600;fill:#112637;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
 .live-distance line{stroke:#c8412e;stroke-width:2;stroke-dasharray:6 4}
 .live-distance rect{fill:#c8412e}.live-distance text{font-size:12px;font-weight:700;fill:#fff}
 .live-object{transition:transform .25s linear}
-.live-vehicle{fill:#fff;stroke:#112637;stroke-width:3;transition:stroke .25s}
+.live-vehicle{fill:#1a73e8;stroke:#fff;stroke-width:3;transition:stroke .25s}
 .live-vehicle.is-hot,.live-person.is-hot{stroke:#c8412e}.live-vehicle.is-safe,.live-person.is-safe{stroke:#1f7a5a}
 .live-person{fill:#fff;stroke:#112637;stroke-width:3}
-.live-vehicle-text{font-size:11px;font-weight:700;fill:#172e3f}
+.live-vehicle-text{font-size:11px;font-weight:700;fill:#fff}.live-object[data-live-object=person] .live-vehicle-text{fill:#172e3f}
 .live-tag{fill:#112637}.live-tag-text{font-size:11px;font-weight:600;fill:#fff}
 .live-banner{position:absolute;right:18px;top:18px;display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:#c8412e;color:#fff;font-weight:700;font-size:14px;letter-spacing:1px;box-shadow:0 10px 30px #c8412e59;animation:livePop .45s cubic-bezier(.34,1.56,.64,1) both}
 .live-banner i{width:10px;height:10px;border-radius:50%;background:#fff;animation:liveBlink .8s ease-in-out infinite alternate}
