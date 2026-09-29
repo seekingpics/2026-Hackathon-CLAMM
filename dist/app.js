@@ -10,7 +10,7 @@ import {VIEWS,workerSummary,balance} from './views.mjs';
 const app=document.querySelector('#app');
 const NAV=[['home','Home','home'],['safety','Worker safety','shield'],['report','Evidence & report','report']];
 const TABS={live:'On-site protection',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
-const state={view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,planningTab:'plans',toolExample:false,returnTo:{site:'CR',tab:'live'}};
+const state={report:{scope:'selected',eventType:'all',response:'all',selectedId:null},view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,planningTab:'plans',toolExample:false,returnTo:{site:'CR',tab:'live'}};
 let exportPreview=null,versionCounter=1,cachedKey='',cachedSnapshot;
 const isTool=()=>Boolean(SUPPORT_TOOLS[state.view]);
 const modelAvailable=()=>workerSafety.selected==='CR'||state.toolExample;
@@ -45,8 +45,9 @@ function navigate(view){state.view=view;state.playing=false;state.toolExample=fa
 function openArea(tab){if(!TABS[tab])return;handleSafetyAction('tab',tab);navigate('safety');}
 function openTool(tool){
  if(!SUPPORT_TOOLS[tool])return;
+ const fromReport=state.view==='report';
  if(!isTool())state.returnTo={site:workerSafety.selected,tab:state.view==='safety'?workerSafety.tab:SUPPORT_TOOLS[tool].tab};
- state.toolExample=false;state.planningTab='plans';navigate(tool);
+ state.toolExample=false;state.planningTab='plans';navigate(tool);state.toolExample=fromReport;
 }
 function returnToSafety(){handleSafetyAction('site',state.returnTo.site);handleSafetyAction('tab',state.returnTo.tab);navigate('safety');}
 function launchScenario(mode){
@@ -78,10 +79,13 @@ function toolContent(s){
  const description=state.view==='queue'?'This replay uses its own model clock. It does not follow the on-site animation, send watch alerts or use SCATS as a live queue detector.':state.view==='planning'?'Plan changes update the queue and equipment-delivery models. Review the worker position and safety configuration separately in Site layout.':'Dispatch feasibility checks jobs, payload and battery reserve. It does not confirm physical delivery, equipment availability on site or worksite readiness.';
  return intro+`<div class="tool-notice"><strong>Cremorne illustrative model</strong>${site.id!=='CR'?` · Opened from ${esc(site.name)}; selected worksite retained.`:''}<br>${description}</div>${controls()}${VIEWS[state.view](s,state)}`;
 }
+function reportHeader(site){
+ return `<header class="report-topbar"><button class="report-brand" data-action="nav-home" aria-label="RPM Hire home"><img src="./assets/rpm-hire-logo.png" alt="RPM Hire" width="544" height="190"></button><nav aria-label="Main navigation">${NAV.map(([id,label])=>`<button data-action="nav-${id}" ${id==='report'?'aria-current="page"':''}>${label}</button>`).join('')}</nav><div class="report-site"><label for="worksite" class="report-sr-only">Selected worksite</label><select id="worksite" aria-label="Selected worksite">${workerSafety.sites.map(s=>`<option value="${s.id}" ${s.id===site.id?'selected':''}>${s.name}</option>`).join('')}</select><span class="report-demo-badge">DEMONSTRATOR</span></div></header>`;
+}
 function render(){
  const s=current(),site=selectedSite(workerSafety),title=isTool()?SUPPORT_TOOLS[state.view].title:NAV.find(x=>x[0]===state.view)?.[1]||'Home';
  document.title=`${title} · RPM Roadworks Lab`;
- app.innerHTML=`<a class="skip-link" href="#main-content">Skip to content</a><div class="shell"><aside class="sidebar"><div class="brand"><img class="brand-logo" src="./assets/rpm-hire-logo.png" alt="RPM Hire — Keeping Traffic Moving" width="544" height="190"><small>ROADWORKS LAB</small></div><div class="side-label">WORKSPACE</div><nav aria-label="Main navigation">${NAV.map(([id,label,ico])=>{const active=state.view===id||(id==='safety'&&isTool());return `<button data-action="nav-${id}" class="nav-item ${active?'active':''}" ${active?'aria-current="page"':''}>${icon(ico)}${label}</button>`;}).join('')}</nav><div class="sidebar-foot"><strong>Worker safety demonstrator</strong>Melbourne, Victoria<br>Official road context<br>Simulated operations</div></aside><div class="page"><header class="topbar"><div class="breadcrumb">Workspace / <strong>${state.view==='home'?'Home':title}</strong></div><div class="top-site"><label for="worksite">Selected worksite</label><select id="worksite" aria-label="Selected worksite">${workerSafety.sites.map(s=>`<option value="${s.id}" ${s.id===site.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="top-meta"><span class="badge">DEMONSTRATION</span></div></header><main class="content ${state.view==='home'?'is-home':''}" id="main-content" tabindex="-1">${state.view==='home'?'':`<div class="heading-row"><div><h1>${title}</h1><p class="sub">${state.view==='safety'?'Protect people. Support the worksite.':isTool()?'Connected context for the worker safety workspace.':'Worker records and supporting model evidence.'}</p></div><div class="actions">${btn(state.guide===null?'Start guided demo':'Resume guided demo','tour','dark')}${state.view==='report'?'':btn('Export scenario','export')}</div></div>`}${guideMarkup()}<div id="view">${state.view==='home'?homePage(site):state.view==='safety'?safetyPage():state.view==='report'?evidencePage(s,state,exportSafety(),governmentExport()):toolContent(s)}</div><p class="footnote">RPM Roadworks Lab · Official SCATS / Vicmap road context · Simulated operations · No physical equipment is controlled.</p></main></div></div><div id="dialog-root">${dialogMarkup()}</div>`;
+ app.innerHTML=`<a class="skip-link" href="#main-content">Skip to content</a><div class="shell ${state.view==='report'?'report-shell':''}">${state.view==='report'?reportHeader(site):''}<aside class="sidebar"><div class="brand"><img class="brand-logo" src="./assets/rpm-hire-logo.png" alt="RPM Hire — Keeping Traffic Moving" width="544" height="190"><small>ROADWORKS LAB</small></div><div class="side-label">WORKSPACE</div><nav aria-label="Main navigation">${NAV.map(([id,label,ico])=>{const active=state.view===id||(id==='safety'&&isTool());return `<button data-action="nav-${id}" class="nav-item ${active?'active':''}" ${active?'aria-current="page"':''}>${icon(ico)}${label}</button>`;}).join('')}</nav><div class="sidebar-foot"><strong>Worker safety demonstrator</strong>Melbourne, Victoria<br>Official road context<br>Simulated operations</div></aside><div class="page"><header class="topbar"><div class="breadcrumb">Workspace / <strong>${state.view==='home'?'Home':title}</strong></div><div class="top-site"><label for="worksite">Selected worksite</label><select id="worksite" aria-label="Selected worksite">${workerSafety.sites.map(s=>`<option value="${s.id}" ${s.id===site.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="top-meta"><span class="badge">DEMONSTRATION</span></div></header><main class="content ${state.view==='home'?'is-home':state.view==='report'?'is-report':''}" id="main-content" tabindex="-1">${['home','report'].includes(state.view)?'':`<div class="heading-row"><div><h1>${title}</h1><p class="sub">${state.view==='safety'?'Protect people. Support the worksite.':isTool()?'Connected context for the worker safety workspace.':'Worker records and supporting model evidence.'}</p></div><div class="actions">${btn(state.guide===null?'Start guided demo':'Resume guided demo','tour','dark')}${state.view==='report'?'':btn('Export scenario','export')}</div></div>`}${guideMarkup()}<div id="view">${state.view==='home'?homePage(site):state.view==='safety'?safetyPage():state.view==='report'?evidencePage(s,state,exportSafety(),governmentExport(),{...state.report,siteId:workerSafety.selected}):toolContent(s)}</div><p class="footnote">RPM Roadworks Lab · Official SCATS / Vicmap road context · Simulated operations · No physical equipment is controlled.</p></main></div></div><div id="dialog-root">${dialogMarkup()}</div>`;
 }
 function repaintWorkspace(){if(state.view==='safety')paintSafety();else render();}
 function dynamic(){
@@ -140,6 +144,9 @@ app.addEventListener('click',event=>{
    case 'ack':if(!state.acknowledged.includes(button.dataset.id))state.acknowledged.push(button.dataset.id);toast('Receipt recorded. The modelled risk is unchanged.');break;
    case 'inspect':state.playing=false;state.dialog=button.dataset.id;break;
    case 'replay-event':{const e=state.history.find(x=>x.id===button.dataset.id);if(e){state.returnTo={site:workerSafety.selected,tab:workerSafety.tab};Object.assign(state,e.config,{assumptions:{...e.config.assumptions},playing:false,dialog:null,view:e.module==='R4'?'fleet':e.module==='R3'?'planning':'queue',toolExample:true,planningTab:'plans'});updateRoute();}break;}
+   case 'report-select':state.report.selectedId=button.dataset.id;render();document.querySelector('.report-event-trigger[aria-pressed="true"]')?.focus({preventScroll:true});return;
+   case 'report-reset':state.report.eventType='all';state.report.response='all';state.report.selectedId=null;break;
+   case 'report-sources':{const sources=document.querySelector('#report-sources');sources.open=true;sources.scrollIntoView({block:'start',behavior:'instant'});sources.querySelector('summary').focus();return;}
    case 'worker-event':handleSafetyAction('site',button.dataset.site);if(button.dataset.worker)handleSafetyAction('worker-select',button.dataset.worker);openArea(button.dataset.kind==='support'?'worker':'supervisor');break;
    case 'close':state.dialog=null;break;
    case 'export':showExport();break;
@@ -152,7 +159,8 @@ app.addEventListener('click',event=>{
 });
 app.addEventListener('change',event=>{
  const el=event.target;
- if(el.id==='worksite'){handleSafetyAction('site',el.value);state.toolExample=false;state.playing=false;render();return;}
+ if(el.dataset.reportFilter){state.report[el.dataset.reportFilter]=el.value;state.report.selectedId=null;const focusId=el.id;render();document.getElementById(focusId)?.focus({preventScroll:true});return;}
+ if(el.id==='worksite'){state.report.selectedId=null;handleSafetyAction('site',el.value);state.toolExample=false;state.playing=false;render();return;}
  if(el.dataset.governmentDetector){setGovernmentControl('detector',el.value,el.dataset.governmentDetector);repaintWorkspace();return;}
  if(el.dataset.governmentInterval){setGovernmentControl('interval',el.value,el.dataset.governmentInterval);repaintWorkspace();return;}
  if(el.hasAttribute('data-ws-file')){handleSafetyFile(el.files[0]);repaintWorkspace();return;}

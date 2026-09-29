@@ -80,15 +80,15 @@ Disable depot charger or edit the assumptions to explore infeasibility. The mode
 
 ## Evidence & report
 
-Review worker event history first: site, worker, trigger, delivery, acknowledgement, owner and response stage. Expand Trigger & history for the event audit. Open response returns to the relevant site and worker or supervisor page.
+The report opens with the selected worksite. Choose All worksites to review the whole session, and filter by event type or response. The summary reflects the worksite scope, not the event filters. Awaiting acknowledgement counts delivered, open events without a receipt; failed or unconfirmed delivery is flagged separately. Support requests counts open requests, while Relief completed counts recorded handovers or breaks.
 
-The separate supporting snapshots and model ledger describe the Cremorne example. Inspect a model event to view its recorded assumptions and replay it. Replaying a model event does not alter the worker safety layout or send a watch notification.
+Select a worker event in the table to open its detail panel. Review the actual trigger time, latest delivery result, acknowledgement, response owner and next action. Expand Trigger & history for the complete event audit. Open response returns to the correct worksite and worker or supervisor page. Acknowledgement confirms receipt; it does not clear a hazard or complete support.
 
-- Download scenario JSON saves the complete worksite state, worker audits, official-data provenance, current supporting models and both plan comparisons.
-- Export event CSV saves worker and supporting-model events with readable function names.
-- Print / save PDF prints the report. Expand any audit details you want to include before printing.
+The compact supporting tools show the illustrative Cremorne model. Their Open buttons open that example while retaining the selected worksite. Expand Supporting model event history to inspect or replay recorded model assumptions. The model clock is independent; replay does not alter worker safety layouts or send watch notifications.
 
-The export dialog also provides the full contents for browsers that do not save downloads. No automatic server record is kept. Export before reloading or closing the session.
+Export report and JSON save all worksites, worker audits, official-data provenance, current supporting models and both plan comparisons. CSV saves all worker and supporting-model events. Worksite and event filters do not limit JSON or CSV exports. Print captures the current report view; expand any audit details you want to include.
+
+The export dialog provides full file contents for browsers that do not save downloads. View sources opens provenance and report guidance. Records last for this page session; export before reloading. No automatic server record is kept.
 
 ## What is connected
 

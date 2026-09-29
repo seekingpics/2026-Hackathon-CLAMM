@@ -26,7 +26,8 @@ Worker safety has four areas: On-site protection, Workers & support, Site layout
 
 - dist/app.js: routing, guided demo, state and exports.
 - dist/home.mjs / workspace.css: landing page and shared presentation.
-- dist/connected-context.mjs: scoped supporting summaries and evidence report.
+- dist/connected-context.mjs: scoped supporting summaries.
+- dist/evidence-report.mjs / evidence-report.css: data-first report, filters, event details and provenance.
 - dist/safety*.mjs / worker-support.mjs / on-site-display.mjs: worker safety behaviours.
 - dist/model.mjs / views.mjs: existing queue, planning, fleet and cost models.
 - dist/government-data.mjs / data/: official context and saved fallback data.
@@ -45,7 +46,9 @@ Run each directly (also works in environments that restrict test-runner subproce
 
 `node tests/workspace.test.mjs`
 
-46 checks cover existing model invariants, moving alerts, worker isolation, data provenance, tool scope and report integration.
+`node tests/evidence-report.test.mjs`
+
+52 checks cover existing model invariants, moving alerts, worker isolation, data provenance, tool scope and report integration.
 
 Legacy module identifiers remain inside model data for compatibility. The interface and CSV use functional names. Optional WebMCP tools read the complete scenario or configure the Cremorne supporting model; ordinary browsers can use all screens without WebMCP.
 
