@@ -8,8 +8,9 @@ export const SUPPORT_TOOLS={queue:{title:'Queue warnings',tab:'live'},planning:{
 const values=items=>`<div class="support-values">${items.map(([v,l])=>`<div><strong>${esc(v)}</strong><span>${esc(l)}</span></div>`).join('')}</div>`;
 export function supportingCard(tab,site,s,st){
   const tool=Object.keys(SUPPORT_TOOLS).find(k=>SUPPORT_TOOLS[k].tab===tab);if(!tool)return '';
-  if(tool==='fleet')return '';
-  const config=SUPPORT_TOOLS[tool],modelled=site.id==='CR';let detail='',foot='';
+  const config=SUPPORT_TOOLS[tool],modelled=site.id==='CR';
+  if(tool==='fleet'&&modelled)return '';
+  let detail='',foot='';
   if(!modelled){detail=`<p>No ${config.title.toLowerCase()} model has been configured for ${esc(site.name)}.</p>`;foot='The Cremorne example is available inside the supporting tool. Its results do not describe this worksite.';}
   else if(tool==='queue'){
     detail=values([[s.feed?`${num(s.queue.length)} m`:'Unknown','Modelled queue'],[s.queue.speed==null?'No command':`${s.queue.speed} km/h`,'Virtual speed sign']])+`<p>VMS: <strong>${esc(s.queue.vms.replace('\n',' / '))}</strong></p>`;

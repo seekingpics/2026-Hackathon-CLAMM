@@ -15,6 +15,7 @@ test('other worksites never inherit Cremorne model metrics in supporting summari
   assert.doesNotMatch(html,/140 m|60 km\/h|8,250|30\.0 \/ 48/);
  }
  assert.equal(supportingCard('worker',ws.sites[0],s,st),'');
+ assert.equal(supportingCard('supervisor',ws.sites[0],s,st),'');
  assert.match(supportingCard('live',ws.sites[0],s,st),/140 m/);
 });
 test('supporting snapshots label their independent site and time without changing safety records',()=>{
