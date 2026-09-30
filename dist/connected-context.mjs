@@ -8,7 +8,7 @@ export const functionName=id=>FUNCTION_NAMES[id]||id;
 export const SUPPORT_TOOLS={queue:{title:'Queue warnings',tab:'live'},planning:{title:'Work-zone planning',tab:'layout'},fleet:{title:'Fleet & charging',tab:'supervisor'}};
 const values=items=>`<div class="support-values">${items.map(([v,l])=>`<div><strong>${esc(v)}</strong><span>${esc(l)}</span></div>`).join('')}</div>`;
 export function supportingCard(tab,site,s,st){
-  const tool=Object.keys(SUPPORT_TOOLS).find(k=>SUPPORT_TOOLS[k].tab===tab);if(!tool)return '';
+  const tool=Object.keys(SUPPORT_TOOLS).find(k=>SUPPORT_TOOLS[k].tab===tab);if(!tool||tool==='planning')return '';
   const config=SUPPORT_TOOLS[tool],modelled=site.id==='CR';
   if(tool==='fleet'&&modelled)return '';
   let detail='',foot='';

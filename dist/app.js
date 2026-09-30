@@ -3,7 +3,7 @@ import {supportingCard,supportingSnapshot,evidencePage,FUNCTION_NAMES,functionNa
 import {initialiseGovernmentData,refreshRoads,setGovernmentControl,governmentExport,workZoneMap} from './government-data.mjs';
 import {workZonePage,workZoneAction,KNOWN_LOCATIONS,deploymentSummary} from './work-zone.mjs';
 import {selectedSite,activeEvents,validity,stamp,STAGES} from './safety-model.mjs';
-import {safetyPage,publicNoticePage,setSafetyExtension,workerSafety,handleSafetyAction,handleSafetyInput,handleSafetyFile,refreshSafety,exportSafety,paintSafety} from './safety.mjs';
+import {safetyPage,setSafetyExtension,workerSafety,handleSafetyAction,handleSafetyInput,handleSafetyFile,refreshSafety,exportSafety,paintSafety} from './safety.mjs';
 import {DEFAULTS,PLANS,SCENARIOS,validateAssumptions,snapshot,comparePlans,formatTime} from './model.mjs';
 import {esc,btn,metrics,road,events,signs,queueChart} from './visuals.mjs';
 import {VIEWS,workerSummary,balance} from './views.mjs';
@@ -11,7 +11,7 @@ import {VIEWS,workerSummary,balance} from './views.mjs';
 const app=document.querySelector('#app');
 const NAV=[['home','Home','home'],['safety','Worker safety','shield'],['planning','Work-zone planning','pin'],['report','Evidence & report','report']];
 const TABS={live:'On-site protection','road-user-notification':'Road User Notification',worker:'Workers & support',layout:'Site layout',supervisor:'Multi-site supervision'};
-const state={report:{scope:'selected',eventType:'all',response:'all',selectedId:null},view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,planningTab:'plans',toolExample:false,returnTo:{site:'CR',tab:'live'}};
+const state={report:{scope:'selected',eventType:'all',response:'all',selectedId:null},view:'home',plan:'A',scenario:'peak',assumptions:{...DEFAULTS},time:480,playing:false,speed:10,feed:true,injectAt:null,lastBreak:0,version:1,optimized:false,acknowledged:[],history:[],dialog:null,guide:null,toolExample:false,returnTo:{site:'CR',tab:'live'}};
 let exportPreview=null,versionCounter=1,cachedKey='',cachedSnapshot,enterNext=false;
 const isTool=()=>Boolean(SUPPORT_TOOLS[state.view]);
 const modelAvailable=()=>workerSafety.selected==='CR'||state.toolExample;
@@ -32,14 +32,12 @@ function toast(message){const el=document.querySelector('#toast');el.textContent
 function bump(){state.version=++versionCounter;state.playing=false;state.time=Math.min(state.time,state.assumptions.horizon);}
 function scenario(id){const v=SCENARIOS[id];if(!v)return;Object.assign(state,{scenario:id,feed:v.feed,time:Math.min(v.time,state.assumptions.horizon),injectAt:null,lastBreak:0});state.assumptions.demand=v.demand;bump();}
 function setPlan(plan){if(!PLANS[plan])throw Error('Unknown plan');state.plan=plan;bump();}
-function routeHash(){return state.view==='safety'?`#safety/${workerSafety.tab}`:state.view==='planning'&&state.planningTab==='notices'?'#planning/notices':`#${state.view}`;}
+function routeHash(){return state.view==='safety'?`#safety/${workerSafety.tab}`:`#${state.view}`;}
 function updateRoute(replace=false){const hash=routeHash();if(location.hash!==hash)history[replace?'replaceState':'pushState'](null,'',hash);}
 function readRoute(){
  const [view,sub]=(location.hash.slice(1)||'home').split('/');
  state.view=['home','safety','report',...Object.keys(SUPPORT_TOOLS)].includes(view)?view:'home';
  if(state.view==='safety'&&TABS[sub])workerSafety.tab=sub;
- if(view==='safety'&&sub==='public'){state.view='planning';state.planningTab='notices';}
- else if(view==='planning')state.planningTab=sub==='notices'?'notices':'plans';
  state.playing=false;
 }
 function navigate(view){if(view!==state.view)enterNext=true;state.view=view;state.playing=false;state.toolExample=false;updateRoute();window.scrollTo({top:0,behavior:'instant'});}
@@ -47,7 +45,7 @@ function openArea(tab){if(!TABS[tab])return;if(tab!==workerSafety.tab||state.vie
 function openTool(tool){
  if(!SUPPORT_TOOLS[tool])return;
  if(!isTool())state.returnTo={site:workerSafety.selected,tab:state.view==='safety'?workerSafety.tab:SUPPORT_TOOLS[tool].tab};
- state.toolExample=false;state.planningTab='plans';navigate(tool);
+ state.toolExample=false;navigate(tool);
 }
 function returnToSafety(){handleSafetyAction('site',state.returnTo.site);handleSafetyAction('tab',state.returnTo.tab);navigate('safety');}
 function launchScenario(mode){
@@ -59,7 +57,7 @@ function launchScenario(mode){
 const GUIDE=[
  {title:'Watch the approach',tab:'live',text:'Play the vehicle approach. The watch receives an alert when the moving vehicle enters the trigger area. Acknowledge on the watch to record receipt.',action:'Play vehicle approach'},
  {title:'Support the person',tab:'worker',text:'Press SOS on the watch. Find the highlighted worker, assign a supervisor, arrange support and record the completed handover. Try Extended continuous work to demonstrate a duty reminder.'},
- {title:'Check the worksite',tab:'layout',text:'Review the warning-sign worker’s proposed position and any sight-line or escape-route conflicts. Open Work-zone planning below to compare pedestrian access, bus effects and equipment needs.'},
+ {title:'Check the worksite',tab:'layout',text:'Review the warning-sign worker’s proposed position and any sight-line or escape-route conflicts. Open Work-zone planning in the top bar to compare pedestrian access, bus effects and equipment needs.'},
  {title:'Coordinate the response',tab:'supervisor',text:'Review requests by site and owner. Fleet & charging below provides a separate equipment-delivery model; it does not confirm that equipment has arrived.'},
  {title:'Keep the evidence',view:'report',text:'Review delivery, acknowledgement and response history. Export JSON or CSV, or print this report, to keep a copy after the session ends.'}
 ];
@@ -71,11 +69,9 @@ function guideMarkup(){
 }
 function controls(){return `<div class="controlbar"><label>MODEL SCENARIO <select id="scenario" aria-label="Model scenario">${Object.entries(SCENARIOS).map(([id,s])=>`<option value="${id}" ${state.scenario===id?'selected':''}>${s.name}</option>`).join('')}${state.scenario==='custom'?'<option selected value="custom">Custom scenario</option>':''}</select></label><div class="plan-switch" aria-label="Active plan">${['A','B'].map(p=>`<button data-action="plan-${p}" class="${p===state.plan?'selected':''}" aria-pressed="${p===state.plan}">Plan ${p}</button>`).join('')}</div>${state.view==='queue'?`<div class="actions">${btn(state.playing?'Pause':'Play model','play','small')}${btn('Reset model','reset','small')}<select id="speed" aria-label="Model playback speed">${[1,10,30].map(n=>`<option value="${n}" ${n===state.speed?'selected':''}>${n}×</option>`).join('')}</select></div><div class="clock" data-live="clock">${clock()}<small>Independent model time</small></div><label style="flex:1;min-width:160px">MODEL REPLAY <input id="scrubber" type="range" min="0" max="${state.assumptions.horizon}" step="1" value="${Math.floor(state.time)}" aria-label="Model replay time"></label>`:''}</div>`;}
 function toolContent(s){
- const site=selectedSite(workerSafety),config=SUPPORT_TOOLS[state.view],isNotices=state.view==='planning'&&state.planningTab==='notices';
- const tabs=state.view==='planning'?`<nav class="tool-tabs" aria-label="Work-zone planning sections">${btn('Plan & simulate','planning-plans',state.planningTab==='plans'?'selected':'')}${btn('Public works notices','planning-notices',isNotices?'selected':'')}</nav>`:'';
- const intro=`<div class="tool-back">${btn('Back to Worker safety','back-safety')}<p>Supporting tool / ${config.title}</p></div>${tabs}`;
- if(isNotices)return intro+`<div class="notice-wrapper">${publicNoticePage()}</div>`;
- if(state.view==='planning')return intro+workZonePage(workZoneMap);
+ if(state.view==='planning')return workZonePage(workZoneMap);
+ const site=selectedSite(workerSafety),config=SUPPORT_TOOLS[state.view];
+ const intro=`<div class="tool-back">${btn('Back to Worker safety','back-safety')}<p>Supporting tool / ${config.title}</p></div>`;
  if(!modelAvailable())return intro+`<section class="tool-empty"><span class="eyebrow">${esc(site.name).toUpperCase()}</span><h2>This worksite has not been modelled yet.</h2><p>${config.title} currently has a Cremorne demonstration model. Its results are not estimates for ${esc(site.name)}.</p>${btn('Explore Cremorne example','tool-example','primary')}</section>`;
  const description=state.view==='queue'?'This replay uses its own model clock. It does not follow the on-site animation, send watch alerts or use SCATS as a live queue detector.':'Dispatch feasibility checks jobs, payload and battery reserve. It does not confirm physical delivery, equipment availability on site or worksite readiness.';
  return intro+`<div class="tool-notice"><strong>Cremorne illustrative model</strong>${site.id!=='CR'?` · Opened from ${esc(site.name)}; selected worksite retained.`:''}<br>${description}</div>${controls()}${VIEWS[state.view](s,state)}`;
@@ -83,7 +79,7 @@ function toolContent(s){
 function render(){
  const s=current(),site=selectedSite(workerSafety),title=isTool()?SUPPORT_TOOLS[state.view].title:NAV.find(x=>x[0]===state.view)?.[1]||'Home';
  document.title=`${title} · RPM Roadworks Lab`;
- app.innerHTML=`<a class="skip-link" href="#main-content">Skip to content</a><div class="shell"><div class="page"><header class="topbar ${enterNext?'enter':''}"><div class="top-left">${state.view==='safety'?areaBadge(workerSafety.tab):`<button type="button" class="top-brand" data-action="nav-home" aria-label="RPM Roadworks Lab home"><img src="./assets/rpm-hire-logo.png" alt="RPM Hire — Keeping Traffic Moving" width="544" height="190"></button>`}</div><nav class="top-nav" aria-label="Main navigation">${NAV.map(([id,label])=>{const active=state.view===id||(id==='safety'&&isTool()&&state.view!=='planning');return `<button data-action="nav-${id}" class="top-nav-item ${active?'active':''}" ${active?'aria-current="page"':''}>${label}</button>`;}).join('')}</nav><div class="top-site"><label for="worksite">Selected worksite</label><select id="worksite" aria-label="Selected worksite">${workerSafety.sites.map(s=>`<option value="${s.id}" ${s.id===site.id?'selected':''}>${s.name}</option>`).join('')}</select></div><div class="top-meta"><span class="badge">DEMONSTRATION</span></div></header><main class="content ${state.view==='home'?'is-home':state.view==='report'?'is-report':''} ${enterNext?'enter':''}" id="main-content" tabindex="-1">${['home','report'].includes(state.view)?'':`<div class="heading-row"><div><h1>${title}</h1><p class="sub">${state.view==='safety'?'Protect people. Support the worksite.':isTool()?'Connected context for the worker safety workspace.':'Worker records and supporting model evidence.'}</p></div><div class="actions">${btn(state.guide===null?'Start guided demo':'Resume guided demo','tour','dark')}${['report','safety'].includes(state.view)?'':btn('Export scenario','export')}</div></div>`}${guideMarkup()}<div id="view">${state.view==='home'?homePage(site):state.view==='safety'?safetyPage():state.view==='report'?evidencePage(s,state,exportSafety(),governmentExport(),{...state.report,siteId:workerSafety.selected}):toolContent(s)}</div></main></div></div><div id="dialog-root">${dialogMarkup()}</div>`;
+ app.innerHTML=`<a class="skip-link" href="#main-content">Skip to content</a><div class="shell"><div class="page"><header class="topbar ${enterNext?'enter':''}"><div class="top-left">${state.view==='safety'?areaBadge(workerSafety.tab):`<button type="button" class="top-brand" data-action="nav-home" aria-label="RPM Roadworks Lab home"><img src="./assets/rpm-hire-logo.png" alt="RPM Hire — Keeping Traffic Moving" width="544" height="190"></button>`}</div><nav class="top-nav" aria-label="Main navigation">${NAV.map(([id,label])=>{const active=state.view===id||(id==='safety'&&isTool()&&state.view!=='planning');return `<button data-action="nav-${id}" class="top-nav-item ${active?'active':''}" ${active?'aria-current="page"':''}>${label}</button>`;}).join('')}</nav></header><main class="content ${state.view==='home'?'is-home':state.view==='report'?'is-report':''} ${enterNext?'enter':''}" id="main-content" tabindex="-1">${['home','report'].includes(state.view)?'':`<div class="heading-row"><div><h1>${title}</h1><p class="sub">${state.view==='safety'?'Protect people. Support the worksite.':isTool()?'Connected context for the worker safety workspace.':'Worker records and supporting model evidence.'}</p></div>${state.view==='planning'?'':`<div class="actions">${btn(state.guide===null?'Start guided demo':'Resume guided demo','tour','dark')}${['report','safety'].includes(state.view)?'':btn('Export scenario','export')}</div>`}</div>`}${guideMarkup()}<div id="view">${state.view==='home'?homePage(site):state.view==='safety'?safetyPage():state.view==='report'?evidencePage(s,state,exportSafety(),governmentExport(),{...state.report,siteId:workerSafety.selected}):toolContent(s)}</div></main></div></div><div id="dialog-root">${dialogMarkup()}</div>`;
  enterNext=false;
 }
 function repaintWorkspace(){if(state.view==='safety')paintSafety();else render();}
@@ -128,8 +124,6 @@ app.addEventListener('click',event=>{
   else switch(action){
    case 'back-safety':returnToSafety();break;
    case 'tool-example':state.toolExample=true;break;
-   case 'planning-plans':state.planningTab='plans';updateRoute();break;
-   case 'planning-notices':state.planningTab='notices';state.playing=false;updateRoute();break;
    case 'tour-start':guideStep(0);break;
    case 'tour':guideStep(state.guide??0);break;
    case 'guide-return':guideStep(state.guide);break;
@@ -149,7 +143,7 @@ app.addEventListener('click',event=>{
    case 'report-select':state.report.selectedId=button.dataset.id;render();document.querySelector('.report-event-trigger[aria-pressed="true"]')?.focus({preventScroll:true});return;
    case 'report-reset':state.report.eventType='all';state.report.response='all';state.report.selectedId=null;break;
    case 'report-sources':{const sources=document.querySelector('#report-sources');if(sources){sources.open=true;sources.scrollIntoView({block:'start',behavior:'instant'});sources.querySelector('summary')?.focus();}return;}
-   case 'replay-event':{const e=state.history.find(x=>x.id===button.dataset.id);if(e){state.returnTo={site:workerSafety.selected,tab:workerSafety.tab};Object.assign(state,e.config,{assumptions:{...e.config.assumptions},playing:false,dialog:null,view:e.module==='R4'?'fleet':e.module==='R3'?'planning':'queue',toolExample:true,planningTab:'plans'});updateRoute();}break;}
+   case 'replay-event':{const e=state.history.find(x=>x.id===button.dataset.id);if(e){state.returnTo={site:workerSafety.selected,tab:workerSafety.tab};Object.assign(state,e.config,{assumptions:{...e.config.assumptions},playing:false,dialog:null,view:e.module==='R4'?'fleet':e.module==='R3'?'planning':'queue',toolExample:true});updateRoute();}break;}
    case 'worker-event':handleSafetyAction('site',button.dataset.site);if(button.dataset.worker)handleSafetyAction('worker-select',button.dataset.worker);openArea(button.dataset.kind==='support'?'worker':'supervisor');break;
    case 'close':state.dialog=null;break;
    case 'export':showExport();break;
@@ -165,7 +159,6 @@ app.addEventListener('change',event=>{
  const el=event.target;
  if(el.dataset.reportFilter){state.report[el.dataset.reportFilter]=el.value;state.report.selectedId=null;const focusId=el.id;render();document.getElementById(focusId)?.focus({preventScroll:true});return;}
  if(el.dataset.wz){workZoneAction('set',{field:el.dataset.wz,value:el.value});if(el.dataset.wz!=='notes')render();return;}
- if(el.id==='worksite'){state.report.selectedId=null;handleSafetyAction('site',el.value);state.toolExample=false;state.playing=false;render();return;}
  if(el.dataset.governmentDetector){setGovernmentControl('detector',el.value,el.dataset.governmentDetector);repaintWorkspace();return;}
  if(el.dataset.governmentInterval){setGovernmentControl('interval',el.value,el.dataset.governmentInterval);repaintWorkspace();return;}
  if(el.hasAttribute('data-ws-file')){handleSafetyFile(el.files[0]);repaintWorkspace();return;}

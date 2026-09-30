@@ -9,13 +9,14 @@ import {safetyPage,publicNoticePage,workerSafety} from '../dist/safety.mjs';
 const st={plan:'A',assumptions:{...DEFAULTS},time:480,history:[],acknowledged:[]};
 test('other worksites never inherit Cremorne model metrics in supporting summaries',()=>{
  const ws=createSafety(),s=snapshot(st);
- for(const site of ws.sites.slice(1))for(const tab of ['live','layout','supervisor']){
+ for(const site of ws.sites.slice(1))for(const tab of ['live','supervisor']){
   const html=supportingCard(tab,site,s,st);
   assert.match(html,/NOT YET MODELLED/);assert.match(html,new RegExp(site.name));
   assert.doesNotMatch(html,/140 m|60 km\/h|8,250|30\.0 \/ 48/);
  }
  assert.equal(supportingCard('worker',ws.sites[0],s,st),'');
  assert.equal(supportingCard('supervisor',ws.sites[0],s,st),'');
+ assert.equal(supportingCard('layout',ws.sites[0],s,st),'','Work-zone planning is its own page, not a Worker safety card');
  assert.match(supportingCard('live',ws.sites[0],s,st),/140 m/);
 });
 test('supporting snapshots label their independent site and time without changing safety records',()=>{
