@@ -4,7 +4,7 @@ export function signWorkerPosition(layout){
  const point=points[layout.entry]||points.west,reasons=[];
  if(layout.entry==='north'&&layout.template!=='corner')reasons.push('The straight-road template has no northern approach. Select a corner road or another approach.');
  if(layout.escape==='road')reasons.push('The selected escape route crosses traffic. Resolve this conflict before choosing a station.');
- if(layout.obstacle)reasons.push('An obstruction is present. Driver sight lines and the escape route need an on-site check; extra cameras do not resolve this check.');
+ if(layout.obstacle)reasons.push('An obstruction is present. Driver sight lines and the escape route need an on-site check; extra CCTV cameras do not resolve this check.');
  return {...point,hold:reasons.length>0,reasons};
 }
 export function renderSignWorkerPosition(site){const l=site.layout,p=signWorkerPosition(l),colour=p.hold?'#b04e32':'#967020';
